@@ -2,15 +2,17 @@ package com.n2.moon.tower.contracts
 
 import com.n2.moon.tower.states.TowerState
 import net.corda.core.contracts.*
-import net.corda.finance.*
-import net.corda.testing.node.MockServices
-import net.corda.testing.node.ledger
+import net.corda.finance.DOLLARS
+import net.corda.finance.POUNDS
+import net.corda.finance.SWISS_FRANCS
 import net.corda.samples.obligation.ALICE
 import net.corda.samples.obligation.BOB
 import net.corda.samples.obligation.DUMMY
 import net.corda.samples.obligation.MINICORP
 import net.corda.testing.contracts.DummyState
-import org.junit.*
+import net.corda.testing.node.MockServices
+import net.corda.testing.node.ledger
+import org.junit.Test
 import org.junit.jupiter.api.Disabled
 
 /**
@@ -19,7 +21,7 @@ import org.junit.jupiter.api.Disabled
  * As with the [TowerStateTests] uncomment each unit test and run them one at a time. Use the body of the tests and the
  * task description to determine how to get the tests to pass.
  */
-class TowerIssueTests {
+class TowerIssueTowerTests {
     // A pre-defined dummy command.
     class DummyCommand : TypeOnlyCommandData()
     private var ledgerServices = MockServices(listOf("com.n2.moon.tower.contracts"))
@@ -41,7 +43,7 @@ class TowerIssueTests {
      *   requireSingleCommand<REQUIRED_COMMAND>()
      *
      * - We usually encapsulate our commands around an interface inside the contract class called [Commands] which
-     *   implements the [CommandData] interface. The [TowerContract.Commands.Issue] command itself should be defined inside the [Commands]
+     *   implements the [CommandData] interface. The [TowerContract.Commands.IssueTower] command itself should be defined inside the [Commands]
      *   interface as well as implement it, for example:
      *
      *     interface Commands : CommandData {
@@ -56,13 +58,13 @@ class TowerIssueTests {
         val towerState = TowerState(1.POUNDS, ALICE.party, BOB.party)
         ledgerServices.ledger {
             transaction {
-                output(TowerContract.IOU_CONTRACT_ID,  towerState)
+                output(TowerContract.TOWER_CONTRACT_ID,  towerState)
                 command(listOf(ALICE.publicKey, BOB.publicKey), DummyCommand()) // Wrong type.
                 this.fails()
             }
             transaction {
-                output(TowerContract.IOU_CONTRACT_ID, towerState)
-                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.Issue()) // Correct type.
+                output(TowerContract.TOWER_CONTRACT_ID, towerState)
+                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.IssueTower()) // Correct type.
                 this.verifies()
             }
         }
@@ -91,14 +93,14 @@ class TowerIssueTests {
         val towerState = TowerState(1.POUNDS, ALICE.party, BOB.party)
         ledgerServices.ledger {
             transaction {
-                input(TowerContract.IOU_CONTRACT_ID, DummyState())
-                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.Issue())
-                output(TowerContract.IOU_CONTRACT_ID, towerState)
+                input(TowerContract.TOWER_CONTRACT_ID, DummyState())
+                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.IssueTower())
+                output(TowerContract.TOWER_CONTRACT_ID, towerState)
                 this `fails with` "No inputs should be consumed when issuing an TowerState."
             }
             transaction {
-                output(TowerContract.IOU_CONTRACT_ID, towerState)
-                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.Issue())
+                output(TowerContract.TOWER_CONTRACT_ID, towerState)
+                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.IssueTower())
                 this.verifies() // As there are no input states.
             }
         }
@@ -116,14 +118,14 @@ class TowerIssueTests {
         val towerState = TowerState(1.POUNDS, ALICE.party, BOB.party)
         ledgerServices.ledger {
             transaction {
-                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.Issue())
-                output(TowerContract.IOU_CONTRACT_ID, towerState) // Two outputs fails.
-                output(TowerContract.IOU_CONTRACT_ID, towerState)
+                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.IssueTower())
+                output(TowerContract.TOWER_CONTRACT_ID, towerState) // Two outputs fails.
+                output(TowerContract.TOWER_CONTRACT_ID, towerState)
                 this `fails with` "Only one output state should be created when issuing an IOU."
             }
             transaction {
-                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.Issue())
-                output(TowerContract.IOU_CONTRACT_ID, towerState) // One output passes.
+                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.IssueTower())
+                output(TowerContract.TOWER_CONTRACT_ID, towerState) // One output passes.
                 this.verifies()
             }
         }
@@ -153,23 +155,23 @@ class TowerIssueTests {
     fun cannotCreateZeroValueIOUs() {
         ledgerServices.ledger {
             transaction {
-                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.Issue())
-                output(TowerContract.IOU_CONTRACT_ID, TowerState(0.POUNDS, ALICE.party, BOB.party)) // Zero amount fails.
+                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.IssueTower())
+                output(TowerContract.TOWER_CONTRACT_ID, TowerState(0.POUNDS, ALICE.party, BOB.party)) // Zero amount fails.
                 this `fails with` "A newly issued IOU must have a positive amount."
             }
             transaction {
-                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.Issue())
-                output(TowerContract.IOU_CONTRACT_ID, TowerState(100.SWISS_FRANCS, ALICE.party, BOB.party))
+                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.IssueTower())
+                output(TowerContract.TOWER_CONTRACT_ID, TowerState(100.SWISS_FRANCS, ALICE.party, BOB.party))
                 this.verifies()
             }
             transaction {
-                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.Issue())
-                output(TowerContract.IOU_CONTRACT_ID, TowerState(1.POUNDS, ALICE.party, BOB.party))
+                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.IssueTower())
+                output(TowerContract.TOWER_CONTRACT_ID, TowerState(1.POUNDS, ALICE.party, BOB.party))
                 this.verifies()
             }
             transaction {
-                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.Issue())
-                output(TowerContract.IOU_CONTRACT_ID, TowerState(10.DOLLARS, ALICE.party, BOB.party))
+                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.IssueTower())
+                output(TowerContract.TOWER_CONTRACT_ID, TowerState(10.DOLLARS, ALICE.party, BOB.party))
                 this.verifies()
             }
         }
@@ -189,13 +191,13 @@ class TowerIssueTests {
         val borrowerIsLenderIou = TowerState(10.POUNDS, ALICE.party, ALICE.party)
         ledgerServices.ledger {
             transaction {
-                command(listOf(ALICE.publicKey, BOB.publicKey),TowerContract.Commands.Issue())
-                output(TowerContract.IOU_CONTRACT_ID, borrowerIsLenderIou)
+                command(listOf(ALICE.publicKey, BOB.publicKey),TowerContract.Commands.IssueTower())
+                output(TowerContract.TOWER_CONTRACT_ID, borrowerIsLenderIou)
                 this `fails with` "The lender and borrower cannot have the same identity."
             }
             transaction {
-                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.Issue())
-                output(TowerContract.IOU_CONTRACT_ID, towerState)
+                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.IssueTower())
+                output(TowerContract.TOWER_CONTRACT_ID, towerState)
                 this.verifies()
             }
         }
@@ -225,38 +227,38 @@ class TowerIssueTests {
         val towerState = TowerState(1.POUNDS, ALICE.party, BOB.party)
         ledgerServices.ledger {
             transaction {
-                command(DUMMY.publicKey, TowerContract.Commands.Issue())
-                output(TowerContract.IOU_CONTRACT_ID, towerState)
+                command(DUMMY.publicKey, TowerContract.Commands.IssueTower())
+                output(TowerContract.TOWER_CONTRACT_ID, towerState)
                 this `fails with` "Both lender and borrower together only may sign IOU issue transaction."
             }
             transaction {
-                command(ALICE.publicKey, TowerContract.Commands.Issue())
-                output(TowerContract.IOU_CONTRACT_ID, towerState)
+                command(ALICE.publicKey, TowerContract.Commands.IssueTower())
+                output(TowerContract.TOWER_CONTRACT_ID, towerState)
                 this `fails with` "Both lender and borrower together only may sign IOU issue transaction."
             }
             transaction {
-                command(BOB.publicKey, TowerContract.Commands.Issue())
-                output(TowerContract.IOU_CONTRACT_ID, towerState)
+                command(BOB.publicKey, TowerContract.Commands.IssueTower())
+                output(TowerContract.TOWER_CONTRACT_ID, towerState)
                 this `fails with` "Both lender and borrower together only may sign IOU issue transaction."
             }
             transaction {
-                command(listOf(BOB.publicKey, BOB.publicKey, BOB.publicKey), TowerContract.Commands.Issue())
-                output(TowerContract.IOU_CONTRACT_ID, towerState)
+                command(listOf(BOB.publicKey, BOB.publicKey, BOB.publicKey), TowerContract.Commands.IssueTower())
+                output(TowerContract.TOWER_CONTRACT_ID, towerState)
                 this `fails with` "Both lender and borrower together only may sign IOU issue transaction."
             }
             transaction {
-                command(listOf(BOB.publicKey, BOB.publicKey, MINICORP.publicKey, ALICE.publicKey), TowerContract.Commands.Issue())
-                output(TowerContract.IOU_CONTRACT_ID, towerState)
+                command(listOf(BOB.publicKey, BOB.publicKey, MINICORP.publicKey, ALICE.publicKey), TowerContract.Commands.IssueTower())
+                output(TowerContract.TOWER_CONTRACT_ID, towerState)
                 this `fails with` "Both lender and borrower together only may sign IOU issue transaction."
             }
             transaction {
-                command(listOf(BOB.publicKey, BOB.publicKey, BOB.publicKey, ALICE.publicKey), TowerContract.Commands.Issue())
-                output(TowerContract.IOU_CONTRACT_ID, towerState)
+                command(listOf(BOB.publicKey, BOB.publicKey, BOB.publicKey, ALICE.publicKey), TowerContract.Commands.IssueTower())
+                output(TowerContract.TOWER_CONTRACT_ID, towerState)
                 this.verifies()
             }
             transaction {
-                command(listOf(ALICE.publicKey, BOB.publicKey),TowerContract.Commands.Issue())
-                output(TowerContract.IOU_CONTRACT_ID, towerState)
+                command(listOf(ALICE.publicKey, BOB.publicKey),TowerContract.Commands.IssueTower())
+                output(TowerContract.TOWER_CONTRACT_ID, towerState)
                 this.verifies()
             }
         }

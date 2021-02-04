@@ -11,10 +11,15 @@ import net.corda.core.flows.FlowLogic
 import net.corda.core.identity.CordaX500Name
 import net.corda.core.transactions.SignedTransaction
 import net.corda.core.utilities.getOrThrow
-import net.corda.finance.*
+import net.corda.finance.POUNDS
 import net.corda.testing.internal.chooseIdentityAndCert
-import net.corda.testing.node.*
-import org.junit.*
+import net.corda.testing.node.MockNetwork
+import net.corda.testing.node.MockNetworkNotarySpec
+import net.corda.testing.node.MockNodeParameters
+import net.corda.testing.node.StartedMockNode
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
 import kotlin.test.assertFailsWith
 
 /**
@@ -25,7 +30,7 @@ import kotlin.test.assertFailsWith
  * On some machines/configurations you may have to provide a full path to the quasar.jar file.
  * On some machines/configurations you may have to use the "JAR manifest" option for shortening the command line.
  */
-class TowerIssueFlowTests {
+class TowerIssueTowerFlowTests {
     lateinit var mockNetwork: MockNetwork
     lateinit var a: StartedMockNode
     lateinit var b: StartedMockNode
@@ -58,7 +63,7 @@ class TowerIssueFlowTests {
      * - Create a [TransactionBuilder] and pass it a notary reference.
      * -- A notary [Party] object can be obtained from [FlowLogic.serviceHub.networkMapCache].
      * -- In this training project there is only one notary
-     * - Create an [TowerContract.Commands.Issue] inside a new [Command].
+     * - Create an [TowerContract.Commands.IssueTower] inside a new [Command].
      * -- The required signers will be the same as the state's participants
      * -- Add the [Command] to the transaction builder [addCommand].
      * - Use the flow's [TowerState] parameter as the output state with [addOutputState]
@@ -83,7 +88,7 @@ class TowerIssueFlowTests {
         assert(ptx.tx.inputs.isEmpty())
         assert(ptx.tx.outputs.single().data is TowerState)
         val command = ptx.tx.commands.single()
-        assert(command.value is TowerContract.Commands.Issue)
+        assert(command.value is TowerContract.Commands.IssueTower)
         assert(command.signers.toSet() == towerState.participants.map { it.owningKey }.toSet())
         ptx.verifySignaturesExcept(
             borrower.owningKey,

@@ -13,7 +13,7 @@ import net.corda.finance.contracts.utils.sumCash
 class TowerContract : Contract {
     companion object {
         @JvmStatic
-        val IOU_CONTRACT_ID = "com.n2.moon.tower.contracts.TowerContract"
+        val TOWER_CONTRACT_ID = "com.n2.moon.tower.contracts.TowerContract"
     }
 
     /**
@@ -23,11 +23,11 @@ class TowerContract : Contract {
      */
     interface Commands : CommandData {
 
+        class IssueTower : TypeOnlyCommandData(), Commands
+        class ProposeTowerRentalAgreement : TypeOnlyCommandData(), Commands
+        class AgreeTowerRentalAgreement : TypeOnlyCommandData(), Commands
+        class RejectTowerRentalAgreement : TypeOnlyCommandData(), Commands
 
-
-        class Issue : TypeOnlyCommandData(), Commands
-        class Transfer : TypeOnlyCommandData(), Commands
-        class Settle : TypeOnlyCommandData(), Commands
     }
 
     /**
@@ -38,7 +38,7 @@ class TowerContract : Contract {
 
         val command = tx.commands.requireSingleCommand<Commands>()
         when (command.value) {
-            is Commands.Issue -> requireThat {
+            is Commands.IssueTower -> requireThat {
                 "No inputs should be consumed when issuing an IOU." using (tx.inputs.isEmpty())
                 "Only one output state should be created when issuing an IOU." using (tx.outputs.size == 1)
                 val iou = tx.outputsOfType<TowerState>().single()
@@ -47,7 +47,7 @@ class TowerContract : Contract {
                 "Both lender and borrower together only may sign IOU issue transaction." using
                         (command.signers.toSet() == iou.participants.map { it.owningKey }.toSet())
             }
-            is Commands.Transfer -> requireThat {
+            is Commands.ProposeTowerRentalAgreement -> requireThat {
                 "An IOU transfer transaction should only consume one input state." using (tx.inputs.size == 1)
                 "An IOU transfer transaction should only create one output state." using (tx.outputs.size == 1)
                 val input = tx.inputsOfType<TowerState>().single()
@@ -58,7 +58,7 @@ class TowerContract : Contract {
                         (command.signers.toSet() == (input.participants.map { it.owningKey }.toSet() `union`
                                 output.participants.map { it.owningKey }.toSet()))
             }
-            is Commands.Settle -> {
+            is Commands.AgreeTowerRentalAgreement -> {
                 // Check there is only one group of IOUs and that there is always an input IOU.
                 val ious = tx.groupStates<TowerState, UniqueIdentifier> { it.linearId }.single()
                 requireThat { "There must be one input IOU." using (ious.inputs.size == 1) }

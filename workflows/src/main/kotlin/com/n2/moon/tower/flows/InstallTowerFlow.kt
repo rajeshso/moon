@@ -36,13 +36,13 @@ class InstallTowerFlow(val state: TowerState): FlowLogic<SignedTransaction>() {
 
         // Step 2. Create a new issue command.
         // Remember that a command is a CommandData object and a list of CompositeKeys
-        val issueCommand = Command(TowerContract.Commands.Issue(), state.participants.map { it.owningKey })
+        val issueCommand = Command(TowerContract.Commands.IssueTower(), state.participants.map { it.owningKey })
 
         // Step 3. Create a new TransactionBuilder object.
         val builder = TransactionBuilder(notary = notary)
 
         // Step 4. Add the iou as an output state, as well as a command to the transaction builder.
-        builder.addOutputState(state, TowerContract.IOU_CONTRACT_ID)
+        builder.addOutputState(state, TowerContract.TOWER_CONTRACT_ID)
         builder.addCommand(issueCommand)
 
         // Step 5. Verify and sign it with our KeyPair.
