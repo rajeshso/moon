@@ -20,7 +20,7 @@ import org.junit.Test
  * As with the [TowerStateTests] uncomment each unit test and run them one at a time. Use the body of the tests and the
  * task description to determine how to get the tests to pass.
  */
-class InstallTowerFlowTests {
+class ProposeTowerRentalAgreementFlowTests {
     // A pre-defined dummy command.
     class DummyCommand : TypeOnlyCommandData()
     private var ledgerServices = MockServices(listOf("com.n2.moon.tower.contracts"))
@@ -42,7 +42,7 @@ class InstallTowerFlowTests {
      *   requireSingleCommand<REQUIRED_COMMAND>()
      *
      * - We usually encapsulate our commands around an interface inside the contract class called [Commands] which
-     *   implements the [CommandData] interface. The [TowerContract.Commands.InstallTower] command itself should be defined inside the [Commands]
+     *   implements the [CommandData] interface. The [TowerContract.Commands.ProposeTowerRentalAgreement] command itself should be defined inside the [Commands]
      *   interface as well as implement it, for example:
      *
      *     interface Commands : CommandData {
@@ -63,7 +63,7 @@ class InstallTowerFlowTests {
             }
             transaction {
                 output(TowerContract.TOWER_CONTRACT_ID, towerState)
-                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.InstallTower()) // Correct type.
+                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.ProposeTowerRentalAgreement()) // Correct type.
                 this.verifies()
             }
         }
@@ -93,13 +93,13 @@ class InstallTowerFlowTests {
         ledgerServices.ledger {
             transaction {
                 input(TowerContract.TOWER_CONTRACT_ID, DummyState())
-                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.InstallTower())
+                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.ProposeTowerRentalAgreement())
                 output(TowerContract.TOWER_CONTRACT_ID, towerState)
                 this `fails with` "No inputs should be consumed when issuing an TowerState."
             }
             transaction {
                 output(TowerContract.TOWER_CONTRACT_ID, towerState)
-                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.InstallTower())
+                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.ProposeTowerRentalAgreement())
                 this.verifies() // As there are no input states.
             }
         }
@@ -117,13 +117,13 @@ class InstallTowerFlowTests {
         val towerState = TowerState(1.POUNDS, ALICE.party, BOB.party)
         ledgerServices.ledger {
             transaction {
-                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.InstallTower())
+                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.ProposeTowerRentalAgreement())
                 output(TowerContract.TOWER_CONTRACT_ID, towerState) // Two outputs fails.
                 output(TowerContract.TOWER_CONTRACT_ID, towerState)
                 this `fails with` "Only one output state should be created when issuing an Tower."
             }
             transaction {
-                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.InstallTower())
+                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.ProposeTowerRentalAgreement())
                 output(TowerContract.TOWER_CONTRACT_ID, towerState) // One output passes.
                 this.verifies()
             }
@@ -154,22 +154,22 @@ class InstallTowerFlowTests {
     fun cannotCreateZeroValueIOUs() {
         ledgerServices.ledger {
             transaction {
-                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.InstallTower())
+                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.ProposeTowerRentalAgreement())
                 output(TowerContract.TOWER_CONTRACT_ID, TowerState(0.POUNDS, ALICE.party, BOB.party)) // Zero amount fails.
                 this `fails with` "A newly issued Tower must have a positive amount."
             }
             transaction {
-                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.InstallTower())
+                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.ProposeTowerRentalAgreement())
                 output(TowerContract.TOWER_CONTRACT_ID, TowerState(100.SWISS_FRANCS, ALICE.party, BOB.party))
                 this.verifies()
             }
             transaction {
-                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.InstallTower())
+                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.ProposeTowerRentalAgreement())
                 output(TowerContract.TOWER_CONTRACT_ID, TowerState(1.POUNDS, ALICE.party, BOB.party))
                 this.verifies()
             }
             transaction {
-                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.InstallTower())
+                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.ProposeTowerRentalAgreement())
                 output(TowerContract.TOWER_CONTRACT_ID, TowerState(10.DOLLARS, ALICE.party, BOB.party))
                 this.verifies()
             }
@@ -190,12 +190,12 @@ class InstallTowerFlowTests {
         val borrowerIsLenderIou = TowerState(10.POUNDS, ALICE.party, ALICE.party)
         ledgerServices.ledger {
             transaction {
-                command(listOf(ALICE.publicKey, BOB.publicKey),TowerContract.Commands.InstallTower())
+                command(listOf(ALICE.publicKey, BOB.publicKey),TowerContract.Commands.ProposeTowerRentalAgreement())
                 output(TowerContract.TOWER_CONTRACT_ID, borrowerIsLenderIou)
                 this `fails with` "The lender and borrower cannot have the same identity."
             }
             transaction {
-                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.InstallTower())
+                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.ProposeTowerRentalAgreement())
                 output(TowerContract.TOWER_CONTRACT_ID, towerState)
                 this.verifies()
             }
@@ -226,37 +226,37 @@ class InstallTowerFlowTests {
         val towerState = TowerState(1.POUNDS, ALICE.party, BOB.party)
         ledgerServices.ledger {
             transaction {
-                command(DUMMY.publicKey, TowerContract.Commands.InstallTower())
+                command(DUMMY.publicKey, TowerContract.Commands.ProposeTowerRentalAgreement())
                 output(TowerContract.TOWER_CONTRACT_ID, towerState)
                 this `fails with` "Both lender and borrower together only may sign Tower issue transaction."
             }
             transaction {
-                command(ALICE.publicKey, TowerContract.Commands.InstallTower())
+                command(ALICE.publicKey, TowerContract.Commands.ProposeTowerRentalAgreement())
                 output(TowerContract.TOWER_CONTRACT_ID, towerState)
                 this `fails with` "Both lender and borrower together only may sign Tower issue transaction."
             }
             transaction {
-                command(BOB.publicKey, TowerContract.Commands.InstallTower())
+                command(BOB.publicKey, TowerContract.Commands.ProposeTowerRentalAgreement())
                 output(TowerContract.TOWER_CONTRACT_ID, towerState)
                 this `fails with` "Both lender and borrower together only may sign Tower issue transaction."
             }
             transaction {
-                command(listOf(BOB.publicKey, BOB.publicKey, BOB.publicKey), TowerContract.Commands.InstallTower())
+                command(listOf(BOB.publicKey, BOB.publicKey, BOB.publicKey), TowerContract.Commands.ProposeTowerRentalAgreement())
                 output(TowerContract.TOWER_CONTRACT_ID, towerState)
                 this `fails with` "Both lender and borrower together only may sign Tower issue transaction."
             }
             transaction {
-                command(listOf(BOB.publicKey, BOB.publicKey, MINICORP.publicKey, ALICE.publicKey), TowerContract.Commands.InstallTower())
+                command(listOf(BOB.publicKey, BOB.publicKey, MINICORP.publicKey, ALICE.publicKey), TowerContract.Commands.ProposeTowerRentalAgreement())
                 output(TowerContract.TOWER_CONTRACT_ID, towerState)
                 this `fails with` "Both lender and borrower together only may sign Tower issue transaction."
             }
             transaction {
-                command(listOf(BOB.publicKey, BOB.publicKey, BOB.publicKey, ALICE.publicKey), TowerContract.Commands.InstallTower())
+                command(listOf(BOB.publicKey, BOB.publicKey, BOB.publicKey, ALICE.publicKey), TowerContract.Commands.ProposeTowerRentalAgreement())
                 output(TowerContract.TOWER_CONTRACT_ID, towerState)
                 this.verifies()
             }
             transaction {
-                command(listOf(ALICE.publicKey, BOB.publicKey),TowerContract.Commands.InstallTower())
+                command(listOf(ALICE.publicKey, BOB.publicKey),TowerContract.Commands.ProposeTowerRentalAgreement())
                 output(TowerContract.TOWER_CONTRACT_ID, towerState)
                 this.verifies()
             }
