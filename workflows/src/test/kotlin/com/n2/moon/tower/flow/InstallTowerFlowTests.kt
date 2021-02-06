@@ -30,7 +30,7 @@ import kotlin.test.assertFailsWith
  * On some machines/configurations you may have to provide a full path to the quasar.jar file.
  * On some machines/configurations you may have to use the "JAR manifest" option for shortening the command line.
  */
-class TowerIssueTowerFlowTests {
+class InstallTowerFlowTests {
     lateinit var mockNetwork: MockNetwork
     lateinit var a: StartedMockNode
     lateinit var b: StartedMockNode
@@ -56,14 +56,14 @@ class TowerIssueTowerFlowTests {
 
     /**
      * Task 1.
-     * Build out the [TowerIssueFlow]!
-     * TODO: Implement the [TowerIssueFlow] flow which builds and returns a partially [SignedTransaction].
+     * Build out the [TowerInstallFlow]!
+     * TODO: Implement the [TowerInstallFlow] flow which builds and returns a partially [SignedTransaction].
      * Hint:
      * - There's a lot to do to get this unit test to pass!
      * - Create a [TransactionBuilder] and pass it a notary reference.
      * -- A notary [Party] object can be obtained from [FlowLogic.serviceHub.networkMapCache].
      * -- In this training project there is only one notary
-     * - Create an [TowerContract.Commands.IssueTower] inside a new [Command].
+     * - Create an [TowerContract.Commands.InstallTower] inside a new [Command].
      * -- The required signers will be the same as the state's participants
      * -- Add the [Command] to the transaction builder [addCommand].
      * - Use the flow's [TowerState] parameter as the output state with [addOutputState]
@@ -88,7 +88,7 @@ class TowerIssueTowerFlowTests {
         assert(ptx.tx.inputs.isEmpty())
         assert(ptx.tx.outputs.single().data is TowerState)
         val command = ptx.tx.commands.single()
-        assert(command.value is TowerContract.Commands.IssueTower)
+        assert(command.value is TowerContract.Commands.InstallTower)
         assert(command.signers.toSet() == towerState.participants.map { it.owningKey }.toSet())
         ptx.verifySignaturesExcept(
             borrower.owningKey,

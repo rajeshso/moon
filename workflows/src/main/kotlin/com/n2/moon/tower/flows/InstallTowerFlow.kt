@@ -36,7 +36,7 @@ class InstallTowerFlow(val state: TowerState): FlowLogic<SignedTransaction>() {
 
         // Step 2. Create a new issue command.
         // Remember that a command is a CommandData object and a list of CompositeKeys
-        val issueCommand = Command(TowerContract.Commands.IssueTower(), state.participants.map { it.owningKey })
+        val issueCommand = Command(TowerContract.Commands.InstallTower(), state.participants.map { it.owningKey })
 
         // Step 3. Create a new TransactionBuilder object.
         val builder = TransactionBuilder(notary = notary)

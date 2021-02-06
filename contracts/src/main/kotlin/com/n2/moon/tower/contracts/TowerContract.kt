@@ -23,7 +23,7 @@ class TowerContract : Contract {
      */
     interface Commands : CommandData {
 
-        class IssueTower : TypeOnlyCommandData(), Commands
+        class InstallTower : TypeOnlyCommandData(), Commands
         class ProposeTowerRentalAgreement : TypeOnlyCommandData(), Commands
         class AgreeTowerRentalAgreement : TypeOnlyCommandData(), Commands
         class RejectTowerRentalAgreement : TypeOnlyCommandData(), Commands
@@ -38,7 +38,7 @@ class TowerContract : Contract {
 
         val command = tx.commands.requireSingleCommand<Commands>()
         when (command.value) {
-            is Commands.IssueTower -> requireThat {
+            is Commands.InstallTower -> requireThat {
                 "No inputs should be consumed when issuing an Tower." using (tx.inputs.isEmpty())
                 "Only one output state should be created when issuing an Tower." using (tx.outputs.size == 1)
                 val iou = tx.outputsOfType<TowerState>().single()
@@ -60,13 +60,13 @@ class TowerContract : Contract {
             }
             is Commands.AgreeTowerRentalAgreement -> {
                 // Check there is only one group of IOUs and that there is always an input IOU.
-                val ious = tx.groupStates<TowerState, UniqueIdentifier> { it.linearId }.single()
-                requireThat { "There must be one input IOU." using (ious.inputs.size == 1) }
+                val towers = tx.groupStates<TowerState, UniqueIdentifier> { it.linearId }.single()
+                requireThat { "There must be one input IOU." using (towers.inputs.size == 1) }
                 // Check there are output cash states.
                 val cash = tx.outputsOfType<Cash.State>()
                 requireThat { "There must be output cash." using (cash.isNotEmpty()) }
                 // Check that the cash is being assigned to us.
-                val inputIou = ious.inputs.single()
+                val inputIou = towers.inputs.single()
                 val acceptableCash = cash.filter { it.owner == inputIou.lender }
                 requireThat { "Output cash must be paid to the lender." using (acceptableCash.isNotEmpty()) }
                 // Sum the cash being sent to us (we don't care about the issuer).
@@ -76,12 +76,12 @@ class TowerContract : Contract {
                 // Check to see if we need an output IOU or not.
                 if (amountOutstanding == sumAcceptableCash) {
                     // If the IOU has been fully settled then there should be no IOU output state.
-                    requireThat { "There must be no output IOU as it has been fully settled." using (ious.outputs.isEmpty()) }
+                    requireThat { "There must be no output IOU as it has been fully settled." using (towers.outputs.isEmpty()) }
                 } else {
                     // If the IOU has been partially settled then it should still exist.
-                    requireThat { "There must be one output IOU." using (ious.outputs.size == 1) }
+                    requireThat { "There must be one output IOU." using (towers.outputs.size == 1) }
                     // Check only the paid property changes.
-                    val outputIou = ious.outputs.single()
+                    val outputIou = towers.outputs.single()
                     requireThat { "Only the paid amount can change." using (inputIou.copy(paid = outputIou.paid) == outputIou)}
 
                 }
