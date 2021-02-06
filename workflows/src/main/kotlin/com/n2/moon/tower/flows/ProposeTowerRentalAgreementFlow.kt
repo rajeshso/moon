@@ -2,9 +2,10 @@ package com.n2.moon.tower.flows
 
 
 import co.paralleluniverse.fibers.Suspendable
+import com.n2.moon.tower.contracts.TowerContract
+import com.n2.moon.tower.states.TowerState
 import net.corda.core.contracts.Command
 import net.corda.core.contracts.StateAndContract
-import net.corda.samples.obligation.states.IOUState
 import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.contracts.requireThat
 import net.corda.core.flows.*
@@ -13,7 +14,6 @@ import net.corda.core.node.services.queryBy
 import net.corda.core.node.services.vault.QueryCriteria
 import net.corda.core.transactions.SignedTransaction
 import net.corda.core.transactions.TransactionBuilder
-import net.corda.samples.obligation.contract.IOUContract
 
 /**
  * This is the flow which handles transfers of existing IOUs on the ledger.
@@ -30,8 +30,8 @@ class ProposeTowerRentalAgreementFlow(val linearId: UniqueIdentifier,
 
         // Stage 1. Retrieve IOU specified by linearId from the vault.
         val queryCriteria = QueryCriteria.LinearStateQueryCriteria(linearId = listOf(linearId))
-        val iouStateAndRef =  serviceHub.vaultService.queryBy<IOUState>(queryCriteria).states.single()
-        val inputIou = iouStateAndRef.state.data
+        val towerStateAndRef =  serviceHub.vaultService.queryBy<TowerState>(queryCriteria).states.single()
+        val inputIou = towerStateAndRef.state.data
 
         // Stage 2. This flow can only be initiated by the current recipient.
         if (ourIdentity != inputIou.lender) {
@@ -43,7 +43,7 @@ class ProposeTowerRentalAgreementFlow(val linearId: UniqueIdentifier,
 
         // Stage 4. Create the transfer command.
         val signers = (inputIou.participants + newLender).map { it.owningKey }
-        val transferCommand = Command(IOUContract.Commands.Transfer(), signers)
+        val transferCommand = Command(TowerContract.Commands.ProposeTowerRentalAgreement(), signers)
 
         // Stage 5. Get a reference to a transaction builder.
         // Note: ongoing work to support multiple notary identities is still in progress.
@@ -61,8 +61,8 @@ class ProposeTowerRentalAgreementFlow(val linearId: UniqueIdentifier,
         val builder = TransactionBuilder(notary = notary)
 
         // Stage 6. Create the transaction which comprises one input, one output and one command.
-        builder.withItems(iouStateAndRef,
-                StateAndContract(outputIou, IOUContract.IOU_CONTRACT_ID),
+        builder.withItems(towerStateAndRef,
+                StateAndContract(outputIou, TowerContract.TOWER_CONTRACT_ID),
                 transferCommand)
 
         // Stage 7. Verify and sign the transaction.
@@ -84,13 +84,13 @@ class ProposeTowerRentalAgreementFlow(val linearId: UniqueIdentifier,
  * The signing is handled by the [SignTransactionFlow].
  */
 @InitiatedBy(ProposeTowerRentalAgreementFlow::class)
-class IOUTransferFlowResponder(val flowSession: FlowSession): FlowLogic<SignedTransaction>() {
+class ProposeTowerRentalAgreementFlowResponder(val flowSession: FlowSession): FlowLogic<SignedTransaction>() {
     @Suspendable
     override fun call(): SignedTransaction {
         val signedTransactionFlow = object : SignTransactionFlow(flowSession) {
             override fun checkTransaction(stx: SignedTransaction) = requireThat {
                 val output = stx.tx.outputs.single().data
-                "This must be an IOU transaction" using (output is IOUState)
+                "This must be an IOU transaction" using (output is TowerState)
             }
         }
         val txWeJustSignedId = subFlow(signedTransactionFlow)
