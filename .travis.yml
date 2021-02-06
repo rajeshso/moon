@@ -4,6 +4,7 @@ jdk:
 before_install:
   - chmod +x gradlew
   - chmod +x gradle/wrapper/gradle-wrapper.jar
+  - ./gradlew installQuasar
   - ./gradlew assemble
 script:
   - ./gradlew clean test dN
