@@ -24,3 +24,16 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+.DS_Store
+.gradle/
+build/
+clients/build/kotlin/
+clients/build/tmp/
+contracts/build/
+contracts/out/
+gradle/.DS_Store
+workflows/build/
+workflows/out/integrationTest/
+workflows/out/production/classes/
+workflows/out/test/classes/
