@@ -59,7 +59,7 @@ class InstallTowerFlow(val state: TowerState): FlowLogic<SignedTransaction>() {
 }
 
 /**
- * This is the flow which signs IOU issuances.
+ * This is the flow which signs Tower issuances.
  * The signing is handled by the [SignTransactionFlow].
  */
 @InitiatedBy(InstallTowerFlow::class)
@@ -70,7 +70,7 @@ class InstallTowerFlowResponder(val flowSession: FlowSession): FlowLogic<SignedT
         val signedTransactionFlow = object : SignTransactionFlow(flowSession) {
             override fun checkTransaction(stx: SignedTransaction) = requireThat {
                 val output = stx.tx.outputs.single().data
-                "This must be an IOU transaction" using (output is TowerState)
+                "This must be an Tower transaction" using (output is TowerState)
             }
         }
         val txWeJustSignedId = subFlow(signedTransactionFlow)

@@ -13,7 +13,6 @@ import net.corda.testing.contracts.DummyState
 import net.corda.testing.node.MockServices
 import net.corda.testing.node.ledger
 import org.junit.Test
-import org.junit.jupiter.api.Disabled
 
 /**
  * Practical exercise instructions for Contracts Part 1.
@@ -21,7 +20,7 @@ import org.junit.jupiter.api.Disabled
  * As with the [TowerStateTests] uncomment each unit test and run them one at a time. Use the body of the tests and the
  * task description to determine how to get the tests to pass.
  */
-class TowerIssueTowerTests {
+class InstallTowerFlowTests {
     // A pre-defined dummy command.
     class DummyCommand : TypeOnlyCommandData()
     private var ledgerServices = MockServices(listOf("com.n2.moon.tower.contracts"))
@@ -88,7 +87,7 @@ class TowerIssueTowerTests {
      * You can access the list of inputs via the [LedgerTransaction] object which is passed into
      * [TowerContract.verify].
      */
-    @Disabled
+    //@Disabled
     fun issueTransactionMustHaveNoInputs() {
         val towerState = TowerState(1.POUNDS, ALICE.party, BOB.party)
         ledgerServices.ledger {
@@ -121,7 +120,7 @@ class TowerIssueTowerTests {
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.IssueTower())
                 output(TowerContract.TOWER_CONTRACT_ID, towerState) // Two outputs fails.
                 output(TowerContract.TOWER_CONTRACT_ID, towerState)
-                this `fails with` "Only one output state should be created when issuing an IOU."
+                this `fails with` "Only one output state should be created when issuing an Tower."
             }
             transaction {
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.IssueTower())
@@ -157,7 +156,7 @@ class TowerIssueTowerTests {
             transaction {
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.IssueTower())
                 output(TowerContract.TOWER_CONTRACT_ID, TowerState(0.POUNDS, ALICE.party, BOB.party)) // Zero amount fails.
-                this `fails with` "A newly issued IOU must have a positive amount."
+                this `fails with` "A newly issued Tower must have a positive amount."
             }
             transaction {
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.IssueTower())
@@ -229,27 +228,27 @@ class TowerIssueTowerTests {
             transaction {
                 command(DUMMY.publicKey, TowerContract.Commands.IssueTower())
                 output(TowerContract.TOWER_CONTRACT_ID, towerState)
-                this `fails with` "Both lender and borrower together only may sign IOU issue transaction."
+                this `fails with` "Both lender and borrower together only may sign Tower issue transaction."
             }
             transaction {
                 command(ALICE.publicKey, TowerContract.Commands.IssueTower())
                 output(TowerContract.TOWER_CONTRACT_ID, towerState)
-                this `fails with` "Both lender and borrower together only may sign IOU issue transaction."
+                this `fails with` "Both lender and borrower together only may sign Tower issue transaction."
             }
             transaction {
                 command(BOB.publicKey, TowerContract.Commands.IssueTower())
                 output(TowerContract.TOWER_CONTRACT_ID, towerState)
-                this `fails with` "Both lender and borrower together only may sign IOU issue transaction."
+                this `fails with` "Both lender and borrower together only may sign Tower issue transaction."
             }
             transaction {
                 command(listOf(BOB.publicKey, BOB.publicKey, BOB.publicKey), TowerContract.Commands.IssueTower())
                 output(TowerContract.TOWER_CONTRACT_ID, towerState)
-                this `fails with` "Both lender and borrower together only may sign IOU issue transaction."
+                this `fails with` "Both lender and borrower together only may sign Tower issue transaction."
             }
             transaction {
                 command(listOf(BOB.publicKey, BOB.publicKey, MINICORP.publicKey, ALICE.publicKey), TowerContract.Commands.IssueTower())
                 output(TowerContract.TOWER_CONTRACT_ID, towerState)
-                this `fails with` "Both lender and borrower together only may sign IOU issue transaction."
+                this `fails with` "Both lender and borrower together only may sign Tower issue transaction."
             }
             transaction {
                 command(listOf(BOB.publicKey, BOB.publicKey, BOB.publicKey, ALICE.publicKey), TowerContract.Commands.IssueTower())

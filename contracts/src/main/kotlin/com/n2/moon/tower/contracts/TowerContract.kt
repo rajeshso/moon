@@ -7,8 +7,8 @@ import net.corda.core.transactions.LedgerTransaction
 import net.corda.finance.contracts.asset.Cash
 import net.corda.finance.contracts.utils.sumCash
 /**
- * This is where you'll add the contract code which defines how the [IOUState] behaves. Look at the unit tests in
- * [IOUContractTests] for instructions on how to complete the [TowerContract] class.
+ * This is where you'll add the contract code which defines how the [TowerState] behaves. Look at the unit tests in
+ * [TowerContractTests] for instructions on how to complete the [TowerContract] class.
  */
 class TowerContract : Contract {
     companion object {
@@ -39,22 +39,22 @@ class TowerContract : Contract {
         val command = tx.commands.requireSingleCommand<Commands>()
         when (command.value) {
             is Commands.IssueTower -> requireThat {
-                "No inputs should be consumed when issuing an IOU." using (tx.inputs.isEmpty())
-                "Only one output state should be created when issuing an IOU." using (tx.outputs.size == 1)
+                "No inputs should be consumed when issuing an Tower." using (tx.inputs.isEmpty())
+                "Only one output state should be created when issuing an Tower." using (tx.outputs.size == 1)
                 val iou = tx.outputsOfType<TowerState>().single()
-                "A newly issued IOU must have a positive amount." using (iou.amount.quantity > 0)
+                "A newly issued Tower must have a positive amount." using (iou.amount.quantity > 0)
                 "The lender and borrower cannot have the same identity." using (iou.borrower != iou.lender)
-                "Both lender and borrower together only may sign IOU issue transaction." using
+                "Both lender and borrower together only may sign Tower issue transaction." using
                         (command.signers.toSet() == iou.participants.map { it.owningKey }.toSet())
             }
             is Commands.ProposeTowerRentalAgreement -> requireThat {
-                "An IOU transfer transaction should only consume one input state." using (tx.inputs.size == 1)
-                "An IOU transfer transaction should only create one output state." using (tx.outputs.size == 1)
+                "An Tower transfer transaction should only consume one input state." using (tx.inputs.size == 1)
+                "An Tower transfer transaction should only create one output state." using (tx.outputs.size == 1)
                 val input = tx.inputsOfType<TowerState>().single()
                 val output = tx.outputsOfType<TowerState>().single()
                 "Only the lender property may change." using (input == output.withNewLender(input.lender))
                 "The lender property must change in a transfer." using (input.lender != output.lender)
-                "The borrower, old lender and new lender only must sign an IOU transfer transaction" using
+                "The borrower, old lender and new lender only must sign an Tower transfer transaction" using
                         (command.signers.toSet() == (input.participants.map { it.owningKey }.toSet() `union`
                                 output.participants.map { it.owningKey }.toSet()))
             }
