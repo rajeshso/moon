@@ -9,7 +9,7 @@ import net.corda.core.identity.Party
 import java.util.*
 
 /**
- * This is where you'll add the definition of your state object. Look at the unit tests in [IOUStateTests] for
+ * This is where you'll add the definition of your state object. Look at the unit tests in [TowerStateTests] for
  * instructions on how to complete the [TowerState] class.
  *
  * Remove the "val data: String = "data" property before starting the [TowerState] tasks.
@@ -27,7 +27,7 @@ data class TowerState(val amount: Amount<Currency>,
     override val participants: List<Party> get() = listOf(lender, borrower)
 
     /**
-     * Helper methods for when building transactions for settling and transferring IOUs.
+     * Helper methods for when building transactions for settling and transferring Towers.
      * - [pay] adds an amount to the paid property. It does no validation.
      * - [withNewLender] creates a copy of the current state with a newly specified lender. For use when transferring.
      */

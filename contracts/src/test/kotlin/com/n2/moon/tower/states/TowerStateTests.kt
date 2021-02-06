@@ -1,8 +1,12 @@
 package com.n2.moon.tower.states
 
-import net.corda.core.contracts.*
+import net.corda.core.contracts.Amount
+import net.corda.core.contracts.ContractState
+import net.corda.core.contracts.LinearState
+import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.identity.Party
-import net.corda.finance.*
+import net.corda.finance.DOLLARS
+import net.corda.finance.POUNDS
 import net.corda.samples.obligation.ALICE
 import net.corda.samples.obligation.BOB
 import net.corda.samples.obligation.MEGACORP
@@ -15,8 +19,8 @@ import kotlin.test.assertNotNull
 
 /**
  * Practical exercise instructions.
- * Uncomment the first unit test [hasIOUAmountFieldOfCorrectType] then run the unit test using the green arrow
- * to the left of the [TowerStateTests] class or the [hasIOUAmountFieldOfCorrectType] method.
+ * Uncomment the first unit test [hasTowerAmountFieldOfCorrectType] then run the unit test using the green arrow
+ * to the left of the [TowerStateTests] class or the [hasTowerAmountFieldOfCorrectType] method.
  * Running the unit tests from [TowerStateTests] runs all of the unit tests defined in the class.
  * The test should fail because you need to make some changes to the TowerState to make the test pass. Read the TODO
  * under each task number for a description and a hint of what you need to do.
@@ -33,7 +37,7 @@ class TowerStateTests {
      * As we are dealing with cash lent from one Party to another a sensible token to use would be [Currency].
      */
     @Test
-    fun hasIOUAmountFieldOfCorrectType() {
+    fun hasTowerAmountFieldOfCorrectType() {
         // Does the amount field exist?
         TowerState::class.java.getDeclaredField("amount")
         // Is the amount field of the correct type?
@@ -165,7 +169,7 @@ class TowerStateTests {
 
     /**
      * Task 10.
-     * TODO: Add a helper method called [pay] that can be called from an [TowerState] to settle an amount of the IOU.
+     * TODO: Add a helper method called [pay] that can be called from an [TowerState] to settle an amount of the Tower.
      * Hint:
      * - You will need to increase the [TowerState.paid] property by the amount the borrower wishes to pay.
      * - Add a new function called [pay] in [TowerState]. This function will need to return an [TowerState].
@@ -184,7 +188,7 @@ class TowerStateTests {
 
     /**
      * Task 11.
-     * TODO: Add a helper method called [withNewLender] that can be called from an [TowerState] to change the IOU's lender.
+     * TODO: Add a helper method called [withNewLender] that can be called from an [TowerState] to change the Tower's lender.
      */
     @Test
     fun checkWithNewLenderHelperMethod() {

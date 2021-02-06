@@ -108,13 +108,13 @@ class ProposeTowerRentalAgreementFlowTests {
         // Check that a zero amount TowerState fails.
         val lender = a.info.chooseIdentityAndCert().party
         val borrower = b.info.chooseIdentityAndCert().party
-        val zeroIou = TowerState(0.POUNDS, lender, borrower)
-        val futureOne = a.startFlow(ProposeTowerRentalAgreementFlow(zeroIou))
+        val zeroTower = TowerState(0.POUNDS, lender, borrower)
+        val futureOne = a.startFlow(ProposeTowerRentalAgreementFlow(zeroTower))
         mockNetwork.runNetwork()
         assertFailsWith<TransactionVerificationException> { futureOne.getOrThrow() }
         // Check that an TowerState with the same participants fails.
-        val borrowerIsLenderIou = TowerState(10.POUNDS, lender, lender)
-        val futureTwo = a.startFlow(ProposeTowerRentalAgreementFlow(borrowerIsLenderIou))
+        val borrowerIsLenderTower = TowerState(10.POUNDS, lender, lender)
+        val futureTwo = a.startFlow(ProposeTowerRentalAgreementFlow(borrowerIsLenderTower))
         mockNetwork.runNetwork()
         assertFailsWith<TransactionVerificationException> { futureTwo.getOrThrow() }
         // Check a good TowerState passes.

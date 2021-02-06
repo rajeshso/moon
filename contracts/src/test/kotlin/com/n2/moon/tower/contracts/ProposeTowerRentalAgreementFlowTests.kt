@@ -132,15 +132,15 @@ class ProposeTowerRentalAgreementFlowTests {
 
     /**
      * Task 4.
-     * Now we need to consider the properties of the [TowerState]. We need to ensure that an IOU should always have a
+     * Now we need to consider the properties of the [TowerState]. We need to ensure that an Tower should always have a
      * positive value.
-     * TODO: Write a contract constraint that ensures newly issued IOUs always have a positive value.
+     * TODO: Write a contract constraint that ensures newly issued Towers always have a positive value.
      * Hint: You will need a number of hints to complete this task!
-     * - Use the Kotlin keyword 'val' to create a new constant which will hold a reference to the output IOU state.
+     * - Use the Kotlin keyword 'val' to create a new constant which will hold a reference to the output Tower state.
      * - You can use the Kotlin function [single] to either grab the single element from the list or throw an exception
      *   if there are 0 or more than one elements in the list. Note that we have already checked the outputs list has
      *   only one element in the previous task.
-     * - We need to obtain a reference to the proposed IOU for issuance from the [LedgerTransaction.outputs] list.
+     * - We need to obtain a reference to the proposed Tower for issuance from the [LedgerTransaction.outputs] list.
      *   This list is typed as a list of [ContractState]s, therefore we need to cast the [ContractState] which we return
      *   from [single] to an [TowerState]. [BaseTransaction.outputsOfType] is a helper function that finds states
      *   of a specific type and casts the results to that type.
@@ -151,7 +151,7 @@ class ProposeTowerRentalAgreementFlowTests {
      *   [TowerState.amount.quantity] field.
      */
     @Test
-    fun cannotCreateZeroValueIOUs() {
+    fun cannotCreateZeroValueTowers() {
         ledgerServices.ledger {
             transaction {
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.ProposeTowerRentalAgreement())
@@ -205,13 +205,13 @@ class ProposeTowerRentalAgreementFlowTests {
     /**
      * Task 6.
      * The list of public keys which the commands hold should contain all of the participants defined in the [TowerState].
-     * This is because the IOU is a bilateral agreement where both parties involved are required to sign to issue an
-     * IOU or change the properties of an existing IOU.
+     * This is because the Tower is a bilateral agreement where both parties involved are required to sign to issue an
+     * Tower or change the properties of an existing Tower.
      * TODO: Add a contract constraint to check that all the required signers are [TowerState] participants.
      * Hint:
      * - In Kotlin you can perform a set equality check of two sets with the == operator.
      * - We need to check that the signers for the transaction are a subset of the participants list.
-     * - We don't want any additional public keys not listed in the IOUs participants list.
+     * - We don't want any additional public keys not listed in the Towers participants list.
      * - You will need a reference to the Issue command to get access to the list of signers.
      * - [requireSingleCommand] returns the single required command - you can assign the return value to a constant.
      *

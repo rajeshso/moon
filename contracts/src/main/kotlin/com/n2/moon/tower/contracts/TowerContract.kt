@@ -40,11 +40,11 @@ class TowerContract : Contract {
             is Commands.ProposeTowerRentalAgreement -> requireThat {
                 "No inputs should be consumed when issuing an Tower." using (tx.inputs.isEmpty())
                 "Only one output state should be created when issuing an Tower." using (tx.outputs.size == 1)
-                val iou = tx.outputsOfType<TowerState>().single()
-                "A newly issued Tower must have a positive amount." using (iou.amount.quantity > 0)
-                "The lender and borrower cannot have the same identity." using (iou.borrower != iou.lender)
+                val towerState = tx.outputsOfType<TowerState>().single()
+                "A newly issued Tower must have a positive amount." using (towerState.amount.quantity > 0)
+                "The lender and borrower cannot have the same identity." using (towerState.borrower != towerState.lender)
                 "Both lender and borrower together only may sign Tower issue transaction." using
-                        (command.signers.toSet() == iou.participants.map { it.owningKey }.toSet())
+                        (command.signers.toSet() == towerState.participants.map { it.owningKey }.toSet())
             }
             is Commands.AgreeTowerRentalAgreement -> requireThat {
                 "An Tower transfer transaction should only consume one input state." using (tx.inputs.size == 1)
@@ -58,35 +58,35 @@ class TowerContract : Contract {
                                 output.participants.map { it.owningKey }.toSet()))
             }
             is Commands.RejectTowerRentalAgreement -> {
-                // Check there is only one group of IOUs and that there is always an input IOU.
+                // Check there is only one group of Towers and that there is always an input Tower.
                 val towers = tx.groupStates<TowerState, UniqueIdentifier> { it.linearId }.single()
-                requireThat { "There must be one input IOU." using (towers.inputs.size == 1) }
+                requireThat { "There must be one input Tower." using (towers.inputs.size == 1) }
                 // Check there are output cash states.
                 val cash = tx.outputsOfType<Cash.State>()
                 requireThat { "There must be output cash." using (cash.isNotEmpty()) }
                 // Check that the cash is being assigned to us.
-                val inputIou = towers.inputs.single()
-                val acceptableCash = cash.filter { it.owner == inputIou.lender }
+                val inputTower = towers.inputs.single()
+                val acceptableCash = cash.filter { it.owner == inputTower.lender }
                 requireThat { "Output cash must be paid to the lender." using (acceptableCash.isNotEmpty()) }
                 // Sum the cash being sent to us (we don't care about the issuer).
                 val sumAcceptableCash = acceptableCash.sumCash().withoutIssuer()
-                val amountOutstanding = inputIou.amount - inputIou.paid
+                val amountOutstanding = inputTower.amount - inputTower.paid
                 requireThat { "The amount settled cannot be more than the amount outstanding." using (amountOutstanding >= sumAcceptableCash) }
-                // Check to see if we need an output IOU or not.
+                // Check to see if we need an output Tower or not.
                 if (amountOutstanding == sumAcceptableCash) {
-                    // If the IOU has been fully settled then there should be no IOU output state.
-                    requireThat { "There must be no output IOU as it has been fully settled." using (towers.outputs.isEmpty()) }
+                    // If the Tower has been fully settled then there should be no Tower output state.
+                    requireThat { "There must be no output Tower as it has been fully settled." using (towers.outputs.isEmpty()) }
                 } else {
-                    // If the IOU has been partially settled then it should still exist.
-                    requireThat { "There must be one output IOU." using (towers.outputs.size == 1) }
+                    // If the Tower has been partially settled then it should still exist.
+                    requireThat { "There must be one output Tower." using (towers.outputs.size == 1) }
                     // Check only the paid property changes.
-                    val outputIou = towers.outputs.single()
-                    requireThat { "Only the paid amount can change." using (inputIou.copy(paid = outputIou.paid) == outputIou)}
+                    val outputTower = towers.outputs.single()
+                    requireThat { "Only the paid amount can change." using (inputTower.copy(paid = outputTower.paid) == outputTower)}
 
                 }
                 requireThat {
-                    "Both lender and borrower together only must sign the IOU settle transaction." using
-                            (command.signers.toSet() == inputIou.participants.map { it.owningKey }.toSet())
+                    "Both lender and borrower together only must sign the Tower settle transaction." using
+                            (command.signers.toSet() == inputTower.participants.map { it.owningKey }.toSet())
                 }
             }
         }

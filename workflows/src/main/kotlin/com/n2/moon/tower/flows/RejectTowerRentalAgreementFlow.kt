@@ -21,7 +21,7 @@ import net.corda.finance.workflows.getCashBalance
 import java.util.*
 
 /**
- * This is the flow which handles the (partial) settlement of existing IOUs on the ledger.
+ * This is the flow which handles the (partial) settlement of existing Towers on the ledger.
  * Gathering the counterparty's signature is handled by the [CollectSignaturesFlow].
  * Notarisation (if required) and commitment to the ledger is handled vy the [FinalityFlow].
  * The flow returns the [SignedTransaction] that was committed to the ledger.
@@ -32,14 +32,14 @@ class RejectTowerRentalAgreementFlow(val linearId: UniqueIdentifier, val amount:
     @Suspendable
     override fun call(): SignedTransaction {
 
-        // Step 1. Retrieve the IOU state from the vault.
+        // Step 1. Retrieve the Tower state from the vault.
         val queryCriteria = QueryCriteria.LinearStateQueryCriteria(linearId = listOf(linearId))
         val iouToSettle = serviceHub.vaultService.queryBy<TowerState>(queryCriteria).states.single()
         val counterparty = iouToSettle.state.data.lender
 
         // Step 2. Check the party running this flow is the borrower.
         if (ourIdentity != iouToSettle.state.data.borrower) {
-            throw IllegalArgumentException("IOU settlement flow must be initiated by the borrower.")
+            throw IllegalArgumentException("Tower settlement flow must be initiated by the borrower.")
         }
 
         // Step 3. Create a transaction builder.
@@ -60,17 +60,17 @@ class RejectTowerRentalAgreementFlow(val linearId: UniqueIdentifier, val amount:
         // generateSpend returns all public keys which have to be used to sign transaction
         val (_, cashKeys) = CashUtils.generateSpend(serviceHub, builder, amount, ourIdentityAndCert, counterparty)
 
-        // Step 6. Add the IOU input state and settle command to the transaction builder.
+        // Step 6. Add the Tower input state and settle command to the transaction builder.
         val settleCommand = Command(TowerContract.Commands.RejectTowerRentalAgreement(), listOf(counterparty.owningKey, ourIdentity.owningKey))
-        // Add the input IOU and IOU settle command.
+        // Add the input Tower and Tower settle command.
         builder.addCommand(settleCommand)
         builder.addInputState(iouToSettle)
 
-        // Step 7. Only add an output IOU state of the IOU has not been fully settled.
+        // Step 7. Only add an output Tower state of the Tower has not been fully settled.
         val amountRemaining = iouToSettle.state.data.amount - iouToSettle.state.data.paid - amount
         if (amountRemaining > Amount(0, amount.token)) {
-            val settledIOU: TowerState = iouToSettle.state.data.pay(amount)
-            builder.addOutputState(settledIOU, TowerContract.TOWER_CONTRACT_ID)
+            val settledTower: TowerState = iouToSettle.state.data.pay(amount)
+            builder.addOutputState(settledTower, TowerContract.TOWER_CONTRACT_ID)
         }
 
         // Step 8. Verify and sign the transaction.
@@ -94,7 +94,7 @@ class RejectTowerRentalAgreementFlow(val linearId: UniqueIdentifier, val amount:
 }
 
 /**
- * This is the flow which signs IOU settlements.
+ * This is the flow which signs Tower settlements.
  * The signing is handled by the [SignTransactionFlow].
  */
 @InitiatedBy(RejectTowerRentalAgreementFlow::class)

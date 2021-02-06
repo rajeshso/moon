@@ -16,7 +16,7 @@ import net.corda.core.transactions.SignedTransaction
 import net.corda.core.transactions.TransactionBuilder
 
 /**
- * This is the flow which handles transfers of existing IOUs on the ledger.
+ * This is the flow which handles transfers of existing Towers on the ledger.
  * Gathering the counterparty's signature is handled by the [CollectSignaturesFlow].
  * Notarisation (if required) and commitment to the ledger is handled by the [FinalityFlow].
  * The flow returns the [SignedTransaction] that was committed to the ledger.
