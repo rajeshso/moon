@@ -1,8 +1,8 @@
 package com.n2.moon.tower.flow
 
 import com.n2.moon.tower.contracts.TowerRentalContract
-import com.n2.moon.tower.flows.ProposeTowerRentalAgreementFlow
-import com.n2.moon.tower.flows.ProposeTowerRentalAgreementFlowResponder
+import com.n2.moon.tower.flows.InitiateTowerRentalProposalFlow
+import com.n2.moon.tower.flows.InitiateTowerRentalProposalFlowResponder
 import com.n2.moon.tower.states.TowerRentalProposalState
 import groovy.util.GroovyTestCase.assertEquals
 import net.corda.core.contracts.Command
@@ -30,7 +30,7 @@ import kotlin.test.assertFailsWith
  * On some machines/configurations you may have to provide a full path to the quasar.jar file.
  * On some machines/configurations you may have to use the "JAR manifest" option for shortening the command line.
  */
-class ProposeTowerRentalAgreementFlowTests {
+class InitiateTowerRentalProposalFlowTests {
     lateinit var mockNetwork: MockNetwork
     lateinit var a: StartedMockNode
     lateinit var b: StartedMockNode
@@ -45,7 +45,7 @@ class ProposeTowerRentalAgreementFlowTests {
         b = mockNetwork.createNode(MockNodeParameters())
         val startedNodes = arrayListOf(a, b)
         // For real nodes this happens automatically, but we have to manually register the flow for tests
-        startedNodes.forEach { it.registerInitiatedFlow(ProposeTowerRentalAgreementFlowResponder::class.java) }
+        startedNodes.forEach { it.registerInitiatedFlow(InitiateTowerRentalProposalFlowResponder::class.java) }
         mockNetwork.runNetwork()
     }
 
@@ -76,7 +76,7 @@ class ProposeTowerRentalAgreementFlowTests {
         val lender = a.info.chooseIdentityAndCert().party
         val borrower = b.info.chooseIdentityAndCert().party
         val towerState = TowerRentalProposalState(10.POUNDS, lender, borrower)
-        val flow = ProposeTowerRentalAgreementFlow(towerState)
+        val flow = InitiateTowerRentalProposalFlow(towerState)
         val future = a.startFlow(flow)
         mockNetwork.runNetwork()
         // Return the unsigned(!) SignedTransaction object from the InstallTowerFlow.
@@ -99,7 +99,7 @@ class ProposeTowerRentalAgreementFlowTests {
     /**
      * Task 2.
      * Now we have a well formed transaction, we need to properly verify it using the [TowerRentalContract].
-     * TODO: Amend the [ProposeTowerRentalAgreementFlow] to verify the transaction as well as sign it.
+     * TODO: Amend the [InitiateTowerRentalProposalFlow] to verify the transaction as well as sign it.
      * Hint: You can verify on the builder directly prior to finalizing the transaction. This way
      * you can confirm the transaction prior to making it immutable with the signature.
      */
@@ -109,17 +109,17 @@ class ProposeTowerRentalAgreementFlowTests {
         val lender = a.info.chooseIdentityAndCert().party
         val borrower = b.info.chooseIdentityAndCert().party
         val zeroTower = TowerRentalProposalState(0.POUNDS, lender, borrower)
-        val futureOne = a.startFlow(ProposeTowerRentalAgreementFlow(zeroTower))
+        val futureOne = a.startFlow(InitiateTowerRentalProposalFlow(zeroTower))
         mockNetwork.runNetwork()
         assertFailsWith<TransactionVerificationException> { futureOne.getOrThrow() }
         // Check that an TowerState with the same participants fails.
         val borrowerIsLenderTower = TowerRentalProposalState(10.POUNDS, lender, lender)
-        val futureTwo = a.startFlow(ProposeTowerRentalAgreementFlow(borrowerIsLenderTower))
+        val futureTwo = a.startFlow(InitiateTowerRentalProposalFlow(borrowerIsLenderTower))
         mockNetwork.runNetwork()
         assertFailsWith<TransactionVerificationException> { futureTwo.getOrThrow() }
         // Check a good TowerState passes.
         val towerState = TowerRentalProposalState(10.POUNDS, lender, borrower)
-        val futureThree = a.startFlow(ProposeTowerRentalAgreementFlow(towerState))
+        val futureThree = a.startFlow(InitiateTowerRentalProposalFlow(towerState))
         mockNetwork.runNetwork()
         futureThree.getOrThrow()
     }
@@ -128,7 +128,7 @@ class ProposeTowerRentalAgreementFlowTests {
      * IMPORTANT: Review the [CollectSignaturesFlow] before continuing here.
      * Task 3.
      * Now we need to collect the signature from the [otherParty] using the [CollectSignaturesFlow].
-     * TODO: Amend the [ProposeTowerRentalAgreementFlow] to collect the [otherParty]'s signature.
+     * TODO: Amend the [InitiateTowerRentalProposalFlow] to collect the [otherParty]'s signature.
      * Hint:
      * On the Initiator side:
      * - Get a set of signers required from the participants who are not the node
@@ -154,7 +154,7 @@ class ProposeTowerRentalAgreementFlowTests {
         val lender = a.info.chooseIdentityAndCert().party
         val borrower = b.info.chooseIdentityAndCert().party
         val towerState = TowerRentalProposalState(10.POUNDS, lender, borrower)
-        val flow = ProposeTowerRentalAgreementFlow(towerState)
+        val flow = InitiateTowerRentalProposalFlow(towerState)
         val future = a.startFlow(flow)
         mockNetwork.runNetwork()
         val stx = future.getOrThrow()
@@ -164,7 +164,7 @@ class ProposeTowerRentalAgreementFlowTests {
     /**
      * Task 4.
      * Now we need to store the finished [SignedTransaction] in both counter-party vaults.
-     * TODO: Amend the [ProposeTowerRentalAgreementFlow] by adding a call to [FinalityFlow].
+     * TODO: Amend the [InitiateTowerRentalProposalFlow] by adding a call to [FinalityFlow].
      * Hint:
      * - As mentioned above, use the [FinalityFlow] to ensure the transaction is recorded in both [Party] vaults.
      * - Do not use the [BroadcastTransactionFlow]!
@@ -178,7 +178,7 @@ class ProposeTowerRentalAgreementFlowTests {
         val lender = a.info.chooseIdentityAndCert().party
         val borrower = b.info.chooseIdentityAndCert().party
         val towerState = TowerRentalProposalState(10.POUNDS, lender, borrower)
-        val flow = ProposeTowerRentalAgreementFlow(towerState)
+        val flow = InitiateTowerRentalProposalFlow(towerState)
         val future = a.startFlow(flow)
         mockNetwork.runNetwork()
         val stx = future.getOrThrow()

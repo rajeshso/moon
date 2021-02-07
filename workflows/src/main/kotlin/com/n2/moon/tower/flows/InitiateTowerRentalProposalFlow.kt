@@ -18,7 +18,7 @@ import net.corda.core.transactions.TransactionBuilder
  */
 @InitiatingFlow
 @StartableByRPC
-class ProposeTowerRentalAgreementFlow(val rentalProposalState: TowerRentalProposalState): FlowLogic<SignedTransaction>() {
+class InitiateTowerRentalProposalFlow(val rentalProposalState: TowerRentalProposalState): FlowLogic<SignedTransaction>() {
     @Suspendable
     override fun call(): SignedTransaction {
 
@@ -62,8 +62,8 @@ class ProposeTowerRentalAgreementFlow(val rentalProposalState: TowerRentalPropos
  * This is the flow which signs Tower issuances.
  * The signing is handled by the [SignTransactionFlow].
  */
-@InitiatedBy(ProposeTowerRentalAgreementFlow::class)
-class ProposeTowerRentalAgreementFlowResponder(val flowSession: FlowSession): FlowLogic<SignedTransaction>() {
+@InitiatedBy(InitiateTowerRentalProposalFlow::class)
+class InitiateTowerRentalProposalFlowResponder(val flowSession: FlowSession): FlowLogic<SignedTransaction>() {
 
     @Suspendable
     override fun call(): SignedTransaction {

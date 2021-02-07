@@ -1,8 +1,8 @@
 package com.n2.moon.tower.flow
 
 import com.n2.moon.tower.contracts.TowerRentalContract
-import com.n2.moon.tower.flows.ProposeTowerRentalAgreementFlow
-import com.n2.moon.tower.flows.ProposeTowerRentalAgreementFlowResponder
+import com.n2.moon.tower.flows.InitiateTowerRentalProposalFlow
+import com.n2.moon.tower.flows.InitiateTowerRentalProposalFlowResponder
 import com.n2.moon.tower.flows.RejectTowerRentalAgreementFlow
 import com.n2.moon.tower.flows.RejectTowerRentalAgreementResponder
 import com.n2.moon.tower.states.TowerRentalProposalState
@@ -51,7 +51,7 @@ class RejectTowerRentalAgreementFlowTests {
         c = mockNetwork.createNode(MockNodeParameters())
         val startedNodes = arrayListOf(a, b, c)
         // For real nodes this happens automatically, but we have to manually register the flow for tests
-        startedNodes.forEach { it.registerInitiatedFlow(ProposeTowerRentalAgreementFlowResponder::class.java) }
+        startedNodes.forEach { it.registerInitiatedFlow(InitiateTowerRentalProposalFlowResponder::class.java) }
         startedNodes.forEach { it.registerInitiatedFlow(RejectTowerRentalAgreementResponder::class.java) }
         mockNetwork.runNetwork()
     }
@@ -65,7 +65,7 @@ class RejectTowerRentalAgreementFlowTests {
      * Issue an Tower on the ledger, we need to do this before we can transfer one.
      */
     private fun installTower(towerRentalProposalState: TowerRentalProposalState): SignedTransaction {
-        val flow = ProposeTowerRentalAgreementFlow(towerRentalProposalState)
+        val flow = InitiateTowerRentalProposalFlow(towerRentalProposalState)
         val future = a.startFlow(flow)
         mockNetwork.runNetwork()
         return future.getOrThrow()
