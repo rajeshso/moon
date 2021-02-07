@@ -14,7 +14,6 @@ import net.corda.samples.obligation.MINICORP
 import net.corda.testing.node.MockServices
 import net.corda.testing.node.ledger
 import org.junit.Test
-import org.junit.jupiter.api.Disabled
 
 /**
  * Practical exercise instructions for Contracts Part 2.
@@ -91,7 +90,7 @@ class  AgreeTowerRentalAgreementTests {
      * Hint:
      * - Look at the contract code for "Issue".
      */
-    @Disabled
+    @Test
     fun mustHaveOneInputAndOneOutput() {
         val iou = TowerState(10.POUNDS, ALICE.party, BOB.party)
         ledgerServices.ledger {
@@ -110,14 +109,14 @@ class  AgreeTowerRentalAgreementTests {
             transaction {
                 input(TowerContract::class.java.name, iou)
                 command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerContract.Commands.AgreeTowerRentalAgreement())
-                this `fails with` "An Tower transfer transaction should only consume one input state."
+                this `fails with` "An Tower transfer transaction should only create one output state."
             }
             transaction {
                 input(TowerContract::class.java.name, iou)
                 output(TowerContract::class.java.name, iou.withNewLender(CHARLIE.party))
                 output(TowerContract::class.java.name, DummyState())
                 command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerContract.Commands.AgreeTowerRentalAgreement())
-                this `fails with` "An Tower transfer transaction should only consume one input state."
+                this `fails with` "An Tower transfer transaction should only create one output state."
             }
             transaction {
                 input(TowerContract::class.java.name, iou)
