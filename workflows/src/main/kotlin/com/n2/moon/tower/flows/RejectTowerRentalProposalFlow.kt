@@ -35,10 +35,10 @@ class RejectTowerRentalProposalFlow(val linearId: UniqueIdentifier, val amount: 
         // Step 1. Retrieve the Tower state from the vault.
         val queryCriteria = QueryCriteria.LinearStateQueryCriteria(linearId = listOf(linearId))
         val iouToSettle = serviceHub.vaultService.queryBy<TowerRentalProposalState>(queryCriteria).states.single()
-        val counterparty = iouToSettle.state.data.lender
+        val counterparty = iouToSettle.state.data.proposerParty
 
         // Step 2. Check the party running this flow is the borrower.
-        if (ourIdentity != iouToSettle.state.data.borrower) {
+        if (ourIdentity != iouToSettle.state.data.agreementParty) {
             throw IllegalArgumentException("Tower settlement flow must be initiated by the borrower.")
         }
 

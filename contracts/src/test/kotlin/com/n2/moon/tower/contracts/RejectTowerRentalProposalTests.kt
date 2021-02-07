@@ -383,7 +383,7 @@ class RejectTowerRentalProposalTests {
                 input(TowerRentalContract.TOWER_CONTRACT_ID, iou)
                 input(Cash.PROGRAM_ID, fiveDollars)
                 output(Cash.PROGRAM_ID, fiveDollars.withNewOwner(newOwner = ALICE.party).ownableState)
-                output(TowerRentalContract.TOWER_CONTRACT_ID, iou.copy(borrower = ALICE.party, paid = 5.DOLLARS))
+                output(TowerRentalContract.TOWER_CONTRACT_ID, iou.copy(agreementParty = ALICE.party, paid = 5.DOLLARS))
                 command(BOB.publicKey, fiveDollars.withNewOwner(newOwner = BOB.party).command)
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.RejectTowerRentalAgreement())
                 this `fails with` "Only the paid amount can change."

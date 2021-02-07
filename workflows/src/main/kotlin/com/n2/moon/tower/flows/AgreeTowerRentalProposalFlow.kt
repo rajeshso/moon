@@ -34,7 +34,7 @@ class AgreeTowerRentalProposalFlow(val linearId: UniqueIdentifier,
         val inputIou = towerStateAndRef.state.data
 
         // Stage 2. This flow can only be initiated by the current recipient.
-        if (ourIdentity != inputIou.lender) {
+        if (ourIdentity != inputIou.proposerParty) {
             throw IllegalArgumentException("Tower transfer can only be initiated by the Tower lender.")
         }
 

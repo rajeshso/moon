@@ -181,7 +181,7 @@ class ProposeTowerRentalAgreementFlowTests {
      * For obvious reasons, the identity of the lender and borrower must be different.
      * TODO: Add a contract constraint to check the lender is not the borrower.
      * Hint:
-     * - You can use the [TowerRentalProposalState.lender] and [TowerRentalProposalState.borrower] properties.
+     * - You can use the [TowerRentalProposalState.proposerParty] and [TowerRentalProposalState.agreementParty] properties.
      * - This check must be made before the checking who has signed.
      */
     @Test

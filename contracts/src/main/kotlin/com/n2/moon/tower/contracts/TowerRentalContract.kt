@@ -42,7 +42,7 @@ class TowerRentalContract : Contract {
                 "Only one output state should be created when issuing an Tower." using (tx.outputs.size == 1)
                 val towerState = tx.outputsOfType<TowerRentalProposalState>().single()
                 "A newly issued Tower must have a positive amount." using (towerState.amount.quantity > 0)
-                "The lender and borrower cannot have the same identity." using (towerState.borrower != towerState.lender)
+                "The lender and borrower cannot have the same identity." using (towerState.agreementParty != towerState.proposerParty)
                 "Both lender and borrower together only may sign Tower issue transaction." using
                         (command.signers.toSet() == towerState.participants.map { it.owningKey }.toSet())
             }
@@ -51,8 +51,8 @@ class TowerRentalContract : Contract {
                 "An Tower transfer transaction should only create one output state." using (tx.outputs.size == 1)
                 val input = tx.inputsOfType<TowerRentalProposalState>().single()
                 val output = tx.outputsOfType<TowerRentalProposalState>().single()
-                "Only the lender property may change." using (input == output.withNewLender(input.lender))
-                "The lender property must change in a transfer." using (input.lender != output.lender)
+                "Only the lender property may change." using (input == output.withNewLender(input.proposerParty))
+                "The lender property must change in a transfer." using (input.proposerParty != output.proposerParty)
                 "The borrower, old lender and new lender only must sign an Tower transfer transaction" using
                         (command.signers.toSet() == (input.participants.map { it.owningKey }.toSet() `union`
                                 output.participants.map { it.owningKey }.toSet()))
@@ -66,7 +66,7 @@ class TowerRentalContract : Contract {
                 requireThat { "There must be output cash." using (cash.isNotEmpty()) }
                 // Check that the cash is being assigned to us.
                 val inputTower = towers.inputs.single()
-                val acceptableCash = cash.filter { it.owner == inputTower.lender }
+                val acceptableCash = cash.filter { it.owner == inputTower.proposerParty }
                 requireThat { "Output cash must be paid to the lender." using (acceptableCash.isNotEmpty()) }
                 // Sum the cash being sent to us (we don't care about the issuer).
                 val sumAcceptableCash = acceptableCash.sumCash().withoutIssuer()

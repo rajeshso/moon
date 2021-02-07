@@ -51,9 +51,9 @@ class TowerRentalProposalStateTests {
     @Test
     fun hasLenderFieldOfCorrectType() {
         // Does the lender field exist?
-        TowerRentalProposalState::class.java.getDeclaredField("lender")
+        TowerRentalProposalState::class.java.getDeclaredField("proposerParty")
         // Is the lender field of the correct type?
-        assertEquals(TowerRentalProposalState::class.java.getDeclaredField("lender").type, Party::class.java)
+        assertEquals(TowerRentalProposalState::class.java.getDeclaredField("proposerParty").type, Party::class.java)
     }
 
     /**
@@ -63,9 +63,9 @@ class TowerRentalProposalStateTests {
     @Test
     fun hasBorrowerFieldOfCorrectType() {
         // Does the borrower field exist?
-        TowerRentalProposalState::class.java.getDeclaredField("borrower")
+        TowerRentalProposalState::class.java.getDeclaredField("agreementParty")
         // Is the borrower field of the correct type?
-        assertEquals(TowerRentalProposalState::class.java.getDeclaredField("borrower").type, Party::class.java)
+        assertEquals(TowerRentalProposalState::class.java.getDeclaredField("agreementParty").type, Party::class.java)
     }
 
     /**
@@ -156,8 +156,8 @@ class TowerRentalProposalStateTests {
     fun checkTowerStateParameterOrdering() {
         val fields = TowerRentalProposalState::class.java.declaredFields
         val amountIdx = fields.indexOf(TowerRentalProposalState::class.java.getDeclaredField("amount"))
-        val lenderIdx = fields.indexOf(TowerRentalProposalState::class.java.getDeclaredField("lender"))
-        val borrowerIdx = fields.indexOf(TowerRentalProposalState::class.java.getDeclaredField("borrower"))
+        val lenderIdx = fields.indexOf(TowerRentalProposalState::class.java.getDeclaredField("proposerParty"))
+        val borrowerIdx = fields.indexOf(TowerRentalProposalState::class.java.getDeclaredField("agreementParty"))
         val paidIdx = fields.indexOf(TowerRentalProposalState::class.java.getDeclaredField("paid"))
         val linearIdIdx = fields.indexOf(TowerRentalProposalState::class.java.getDeclaredField("linearId"))
 
@@ -193,7 +193,7 @@ class TowerRentalProposalStateTests {
     @Test
     fun checkWithNewLenderHelperMethod() {
         val towerState = TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party)
-        assertEquals(MINICORP.party, towerState.withNewLender(MINICORP.party).lender)
-        assertEquals(MEGACORP.party, towerState.withNewLender(MINICORP.party).withNewLender(MEGACORP.party).lender)
+        assertEquals(MINICORP.party, towerState.withNewLender(MINICORP.party).proposerParty)
+        assertEquals(MEGACORP.party, towerState.withNewLender(MINICORP.party).withNewLender(MEGACORP.party).proposerParty)
     }
 }
