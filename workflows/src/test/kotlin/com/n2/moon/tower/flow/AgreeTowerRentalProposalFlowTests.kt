@@ -1,8 +1,8 @@
 package com.n2.moon.tower.flow
 
 import com.n2.moon.tower.contracts.TowerRentalContract
-import com.n2.moon.tower.flows.AgreeTowerRentalAgreementFlow
-import com.n2.moon.tower.flows.AgreeTowerRentalAgreementFlowResponder
+import com.n2.moon.tower.flows.AgreeTowerRentalProposalFlow
+import com.n2.moon.tower.flows.AgreeTowerRentalProposalFlowResponder
 import com.n2.moon.tower.flows.InitiateTowerRentalProposalFlow
 import com.n2.moon.tower.flows.InitiateTowerRentalProposalFlowResponder
 import com.n2.moon.tower.states.TowerRentalProposalState
@@ -28,7 +28,7 @@ import kotlin.test.assertFailsWith
  * Practical exercise instructions Flows part 2.
  * Uncomment the unit tests and use the hints + unit test body to complete the Flows such that the unit tests pass.
  */
-class AgreeTowerRentalAgreementFlowTests {
+class AgreeTowerRentalProposalFlowTests {
     lateinit var mockNetwork: MockNetwork
     lateinit var a: StartedMockNode
     lateinit var b: StartedMockNode
@@ -44,7 +44,7 @@ class AgreeTowerRentalAgreementFlowTests {
         val startedNodes = arrayListOf(a, b, c)
         // For real nodes this happens automatically, but we have to manually register the flow for tests
         startedNodes.forEach { it.registerInitiatedFlow(InitiateTowerRentalProposalFlowResponder::class.java) }
-        startedNodes.forEach { it.registerInitiatedFlow(AgreeTowerRentalAgreementFlowResponder::class.java) }
+        startedNodes.forEach { it.registerInitiatedFlow(AgreeTowerRentalProposalFlowResponder::class.java) }
         mockNetwork.runNetwork()
     }
 
@@ -87,7 +87,7 @@ class AgreeTowerRentalAgreementFlowTests {
         val borrower = b.info.chooseIdentityAndCert().party
         val stx = installTower(TowerRentalProposalState(10.POUNDS, lender, borrower))
         val inputTower = stx.tx.outputs.single().data as TowerRentalProposalState
-        val flow = AgreeTowerRentalAgreementFlow(inputTower.linearId, c.info.chooseIdentityAndCert().party)
+        val flow = AgreeTowerRentalProposalFlow(inputTower.linearId, c.info.chooseIdentityAndCert().party)
         val future = a.startFlow(flow)
         mockNetwork.runNetwork()
         val ptx = future.getOrThrow()
@@ -120,7 +120,7 @@ class AgreeTowerRentalAgreementFlowTests {
         val borrower = b.info.chooseIdentityAndCert().party
         val stx = installTower(TowerRentalProposalState(10.POUNDS, lender, borrower))
         val inputTower = stx.tx.outputs.single().data as TowerRentalProposalState
-        val flow = AgreeTowerRentalAgreementFlow(inputTower.linearId, c.info.chooseIdentityAndCert().party)
+        val flow = AgreeTowerRentalProposalFlow(inputTower.linearId, c.info.chooseIdentityAndCert().party)
         val future = b.startFlow(flow)
         mockNetwork.runNetwork()
         assertFailsWith<IllegalArgumentException> { future.getOrThrow() }
@@ -137,7 +137,7 @@ class AgreeTowerRentalAgreementFlowTests {
         val borrower = b.info.chooseIdentityAndCert().party
         val stx = installTower(TowerRentalProposalState(10.POUNDS, lender, borrower))
         val inputTower = stx.tx.outputs.single().data as TowerRentalProposalState
-        val flow = AgreeTowerRentalAgreementFlow(inputTower.linearId, lender)
+        val flow = AgreeTowerRentalProposalFlow(inputTower.linearId, lender)
         val future = a.startFlow(flow)
         mockNetwork.runNetwork()
         // Check that we can't transfer an Tower to ourselves.
@@ -156,7 +156,7 @@ class AgreeTowerRentalAgreementFlowTests {
         val borrower = b.info.chooseIdentityAndCert().party
         val stx = installTower(TowerRentalProposalState(10.POUNDS, lender, borrower))
         val inputTower = stx.tx.outputs.single().data as TowerRentalProposalState
-        val flow = AgreeTowerRentalAgreementFlow(inputTower.linearId, c.info.chooseIdentityAndCert().party)
+        val flow = AgreeTowerRentalProposalFlow(inputTower.linearId, c.info.chooseIdentityAndCert().party)
         val future = a.startFlow(flow)
         mockNetwork.runNetwork()
         future.getOrThrow().verifySignaturesExcept(mockNetwork.defaultNotaryNode.info.legalIdentitiesAndCerts.first().owningKey)
@@ -173,7 +173,7 @@ class AgreeTowerRentalAgreementFlowTests {
         val borrower = b.info.chooseIdentityAndCert().party
         val stx = installTower(TowerRentalProposalState(10.POUNDS, lender, borrower))
         val inputTower = stx.tx.outputs.single().data as TowerRentalProposalState
-        val flow = AgreeTowerRentalAgreementFlow(inputTower.linearId, c.info.chooseIdentityAndCert().party)
+        val flow = AgreeTowerRentalProposalFlow(inputTower.linearId, c.info.chooseIdentityAndCert().party)
         val future = a.startFlow(flow)
         mockNetwork.runNetwork()
         future.getOrThrow().verifyRequiredSignatures()
