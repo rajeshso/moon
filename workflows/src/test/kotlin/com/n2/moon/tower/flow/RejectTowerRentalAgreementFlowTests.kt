@@ -1,6 +1,6 @@
 package com.n2.moon.tower.flow
 
-import com.n2.moon.tower.contracts.TowerContract
+import com.n2.moon.tower.contracts.TowerRentalContract
 import com.n2.moon.tower.flows.ProposeTowerRentalAgreementFlow
 import com.n2.moon.tower.flows.ProposeTowerRentalAgreementFlowResponder
 import com.n2.moon.tower.flows.RejectTowerRentalAgreementFlow
@@ -127,8 +127,8 @@ class RejectTowerRentalAgreementFlowTests {
             assertEquals(
                     outputCashSum,
                     (inputTower.amount - inputTower.paid - outputTower.paid))
-            val command = ledgerTx.commands.requireSingleCommand<TowerContract.Commands>()
-            assert(command.value == TowerContract.Commands.RejectTowerRentalAgreement())
+            val command = ledgerTx.commands.requireSingleCommand<TowerRentalContract.Commands>()
+            assert(command.value == TowerRentalContract.Commands.RejectTowerRentalAgreement())
             // Check the transaction has been signed by the borrower.
             settleResult.verifySignaturesExcept(b.info.chooseIdentityAndCert().party.owningKey,
                     mockNetwork.defaultNotaryNode.info.legalIdentitiesAndCerts.first().owningKey)

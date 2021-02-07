@@ -2,7 +2,7 @@ package com.n2.moon.tower.flows
 
 
 import co.paralleluniverse.fibers.Suspendable
-import com.n2.moon.tower.contracts.TowerContract
+import com.n2.moon.tower.contracts.TowerRentalContract
 import com.n2.moon.tower.states.TowerState
 import net.corda.core.contracts.Command
 import net.corda.core.contracts.StateAndContract
@@ -43,7 +43,7 @@ class AgreeTowerRentalAgreementFlow(val linearId: UniqueIdentifier,
 
         // Stage 4. Create the transfer command.
         val signers = (inputIou.participants + newLender).map { it.owningKey }
-        val transferCommand = Command(TowerContract.Commands.AgreeTowerRentalAgreement(), signers)
+        val transferCommand = Command(TowerRentalContract.Commands.AgreeTowerRentalAgreement(), signers)
 
         // Stage 5. Get a reference to a transaction builder.
         // Note: ongoing work to support multiple notary identities is still in progress.
@@ -62,7 +62,7 @@ class AgreeTowerRentalAgreementFlow(val linearId: UniqueIdentifier,
 
         // Stage 6. Create the transaction which comprises one input, one output and one command.
         builder.withItems(towerStateAndRef,
-                StateAndContract(outputIou, TowerContract.TOWER_CONTRACT_ID),
+                StateAndContract(outputIou, TowerRentalContract.TOWER_CONTRACT_ID),
                 transferCommand)
 
         // Stage 7. Verify and sign the transaction.

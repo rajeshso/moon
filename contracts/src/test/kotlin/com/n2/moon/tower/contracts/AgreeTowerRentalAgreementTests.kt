@@ -33,11 +33,11 @@ class  AgreeTowerRentalAgreementTests {
     /**
      * Task 1.
      * Now things are going to get interesting!
-     * We need the [TowerContract] to not only handle Issues of IOUs but now also Transfers.
+     * We need the [TowerRentalContract] to not only handle Issues of IOUs but now also Transfers.
      * Of course, we'll need to add a new Command and add some additional contract code to handle Transfers.
      * TODO: Add a "Transfer" command to the IOUState and update the verify() function to handle multiple commands.
      * Hint:
-     * - As with the [Issue] command, add the [AgreeTowerRentalAgreement] command within the [TowerContract.Commands].
+     * - As with the [Issue] command, add the [AgreeTowerRentalAgreement] command within the [TowerRentalContract.Commands].
      * - Again, we only care about the existence of the [AgreeTowerRentalAgreement] command in a transaction, therefore it should
      *   subclass the [TypeOnlyCommandData].
      * - You can use the [requireSingleCommand] function to check for the existence of a command which implements a
@@ -49,7 +49,7 @@ class  AgreeTowerRentalAgreementTests {
      *
      *       tx.commands.requireSingleCommand<Commands>()
      *
-     *   To match any command that implements [TowerContract.Commands]
+     *   To match any command that implements [TowerRentalContract.Commands]
      * - We then need to switch on the type of [Command.value], in Kotlin you can do this using a "when" block
      * - For each "when" block case, you can check the type of [Command.value] using the "is" keyword:
      *
@@ -65,19 +65,19 @@ class  AgreeTowerRentalAgreementTests {
         val iou = TowerState(10.POUNDS, ALICE.party, BOB.party)
         ledgerServices.ledger {
             transaction {
-                output(TowerContract::class.java.name, iou)
+                output(TowerRentalContract::class.java.name, iou)
                 command(listOf(ALICE.publicKey, BOB.publicKey), DummyCommand())
-                this `fails with` "Required com.n2.moon.tower.contracts.TowerContract.Commands command"
+                this `fails with` "Required com.n2.moon.tower.contracts.TowerRentalContract.Commands command"
             }
             transaction {
-                output(TowerContract::class.java.name, iou)
-                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.ProposeTowerRentalAgreement())
+                output(TowerRentalContract::class.java.name, iou)
+                command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.ProposeTowerRentalAgreement())
                 this.verifies()
             }
             transaction {
-                input(TowerContract::class.java.name, iou)
-                output(TowerContract::class.java.name, iou.withNewLender(CHARLIE.party))
-                command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerContract.Commands.AgreeTowerRentalAgreement())
+                input(TowerRentalContract::class.java.name, iou)
+                output(TowerRentalContract::class.java.name, iou.withNewLender(CHARLIE.party))
+                command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
                 this.verifies()
             }
         }
@@ -95,33 +95,33 @@ class  AgreeTowerRentalAgreementTests {
         val iou = TowerState(10.POUNDS, ALICE.party, BOB.party)
         ledgerServices.ledger {
             transaction {
-                input(TowerContract::class.java.name, iou)
-                input(TowerContract::class.java.name, DummyState())
-                output(TowerContract::class.java.name, iou.withNewLender(CHARLIE.party))
-                command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerContract.Commands.AgreeTowerRentalAgreement())
+                input(TowerRentalContract::class.java.name, iou)
+                input(TowerRentalContract::class.java.name, DummyState())
+                output(TowerRentalContract::class.java.name, iou.withNewLender(CHARLIE.party))
+                command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
                 this `fails with` "An Tower transfer transaction should only consume one input state."
             }
             transaction {
-                output(TowerContract::class.java.name, iou)
-                command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerContract.Commands.AgreeTowerRentalAgreement())
+                output(TowerRentalContract::class.java.name, iou)
+                command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
                 this `fails with` "An Tower transfer transaction should only consume one input state."
             }
             transaction {
-                input(TowerContract::class.java.name, iou)
-                command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerContract.Commands.AgreeTowerRentalAgreement())
+                input(TowerRentalContract::class.java.name, iou)
+                command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
                 this `fails with` "An Tower transfer transaction should only create one output state."
             }
             transaction {
-                input(TowerContract::class.java.name, iou)
-                output(TowerContract::class.java.name, iou.withNewLender(CHARLIE.party))
-                output(TowerContract::class.java.name, DummyState())
-                command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerContract.Commands.AgreeTowerRentalAgreement())
+                input(TowerRentalContract::class.java.name, iou)
+                output(TowerRentalContract::class.java.name, iou.withNewLender(CHARLIE.party))
+                output(TowerRentalContract::class.java.name, DummyState())
+                command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
                 this `fails with` "An Tower transfer transaction should only create one output state."
             }
             transaction {
-                input(TowerContract::class.java.name, iou)
-                output(TowerContract::class.java.name, iou.withNewLender(CHARLIE.party))
-                command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerContract.Commands.AgreeTowerRentalAgreement())
+                input(TowerRentalContract::class.java.name, iou)
+                output(TowerRentalContract::class.java.name, iou.withNewLender(CHARLIE.party))
+                command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
                 this.verifies()
             }
         }
@@ -143,27 +143,27 @@ class  AgreeTowerRentalAgreementTests {
         val iou = TowerState(10.POUNDS, ALICE.party, BOB.party)
         ledgerServices.ledger {
             transaction {
-                input(TowerContract::class.java.name, TowerState(10.DOLLARS, ALICE.party, BOB.party))
-                output(TowerContract::class.java.name, TowerState(1.DOLLARS, ALICE.party, BOB.party))
-                command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerContract.Commands.AgreeTowerRentalAgreement())
+                input(TowerRentalContract::class.java.name, TowerState(10.DOLLARS, ALICE.party, BOB.party))
+                output(TowerRentalContract::class.java.name, TowerState(1.DOLLARS, ALICE.party, BOB.party))
+                command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
                 this `fails with` "Only the lender property may change."
             }
             transaction {
-                input(TowerContract::class.java.name, TowerState(10.DOLLARS, ALICE.party, BOB.party))
-                output(TowerContract::class.java.name, TowerState(10.DOLLARS, ALICE.party, CHARLIE.party))
-                command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerContract.Commands.AgreeTowerRentalAgreement())
+                input(TowerRentalContract::class.java.name, TowerState(10.DOLLARS, ALICE.party, BOB.party))
+                output(TowerRentalContract::class.java.name, TowerState(10.DOLLARS, ALICE.party, CHARLIE.party))
+                command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
                 this `fails with` "Only the lender property may change."
             }
             transaction {
-                input(TowerContract::class.java.name, TowerState(10.DOLLARS, ALICE.party, BOB.party, 5.DOLLARS))
-                output(TowerContract::class.java.name, TowerState(10.DOLLARS, ALICE.party, BOB.party, 10.DOLLARS))
-                command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerContract.Commands.AgreeTowerRentalAgreement())
+                input(TowerRentalContract::class.java.name, TowerState(10.DOLLARS, ALICE.party, BOB.party, 5.DOLLARS))
+                output(TowerRentalContract::class.java.name, TowerState(10.DOLLARS, ALICE.party, BOB.party, 10.DOLLARS))
+                command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
                 this `fails with` "Only the lender property may change."
             }
             transaction {
-                input(TowerContract::class.java.name, iou)
-                output(TowerContract::class.java.name, iou.withNewLender(CHARLIE.party))
-                command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerContract.Commands.AgreeTowerRentalAgreement())
+                input(TowerRentalContract::class.java.name, iou)
+                output(TowerRentalContract::class.java.name, iou.withNewLender(CHARLIE.party))
+                command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
                 this.verifies()
             }
         }
@@ -179,15 +179,15 @@ class  AgreeTowerRentalAgreementTests {
         val iou = TowerState(10.POUNDS, ALICE.party, BOB.party)
         ledgerServices.ledger {
             transaction {
-                input(TowerContract::class.java.name, iou)
-                output(TowerContract::class.java.name, iou)
-                command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerContract.Commands.AgreeTowerRentalAgreement())
+                input(TowerRentalContract::class.java.name, iou)
+                output(TowerRentalContract::class.java.name, iou)
+                command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
                 this `fails with` "The lender property must change in a transfer."
             }
             transaction {
-                input(TowerContract::class.java.name, iou)
-                output(TowerContract::class.java.name, iou.withNewLender(CHARLIE.party))
-                command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerContract.Commands.AgreeTowerRentalAgreement())
+                input(TowerRentalContract::class.java.name, iou)
+                output(TowerRentalContract::class.java.name, iou.withNewLender(CHARLIE.party))
+                command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
                 this.verifies()
             }
         }
@@ -203,39 +203,39 @@ class  AgreeTowerRentalAgreementTests {
         val iou = TowerState(10.POUNDS, ALICE.party, BOB.party)
         ledgerServices.ledger {
             transaction {
-                input(TowerContract::class.java.name, iou)
-                output(TowerContract::class.java.name, iou.withNewLender(CHARLIE.party))
-                command(listOf(ALICE.publicKey, BOB.publicKey), TowerContract.Commands.AgreeTowerRentalAgreement())
+                input(TowerRentalContract::class.java.name, iou)
+                output(TowerRentalContract::class.java.name, iou.withNewLender(CHARLIE.party))
+                command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
                 this `fails with` "The borrower, old lender and new lender only must sign an Tower transfer transaction"
             }
             transaction {
-                input(TowerContract::class.java.name, iou)
-                output(TowerContract::class.java.name, iou.withNewLender(CHARLIE.party))
-                command(listOf(ALICE.publicKey, CHARLIE.publicKey), TowerContract.Commands.AgreeTowerRentalAgreement())
+                input(TowerRentalContract::class.java.name, iou)
+                output(TowerRentalContract::class.java.name, iou.withNewLender(CHARLIE.party))
+                command(listOf(ALICE.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
                 this `fails with` "The borrower, old lender and new lender only must sign an Tower transfer transaction"
             }
             transaction {
-                input(TowerContract::class.java.name, iou)
-                output(TowerContract::class.java.name, iou.withNewLender(CHARLIE.party))
-                command(listOf(BOB.publicKey, CHARLIE.publicKey), TowerContract.Commands.AgreeTowerRentalAgreement())
+                input(TowerRentalContract::class.java.name, iou)
+                output(TowerRentalContract::class.java.name, iou.withNewLender(CHARLIE.party))
+                command(listOf(BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
                 this `fails with` "The borrower, old lender and new lender only must sign an Tower transfer transaction"
             }
             transaction {
-                input(TowerContract::class.java.name, iou)
-                output(TowerContract::class.java.name, iou.withNewLender(CHARLIE.party))
-                command(listOf(ALICE.publicKey, BOB.publicKey, MINICORP.publicKey), TowerContract.Commands.AgreeTowerRentalAgreement())
+                input(TowerRentalContract::class.java.name, iou)
+                output(TowerRentalContract::class.java.name, iou.withNewLender(CHARLIE.party))
+                command(listOf(ALICE.publicKey, BOB.publicKey, MINICORP.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
                 this `fails with` "The borrower, old lender and new lender only must sign an Tower transfer transaction"
             }
             transaction {
-                input(TowerContract::class.java.name, iou)
-                output(TowerContract::class.java.name, iou.withNewLender(CHARLIE.party))
-                command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey, MINICORP.publicKey), TowerContract.Commands.AgreeTowerRentalAgreement())
+                input(TowerRentalContract::class.java.name, iou)
+                output(TowerRentalContract::class.java.name, iou.withNewLender(CHARLIE.party))
+                command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey, MINICORP.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
                 this `fails with` "The borrower, old lender and new lender only must sign an Tower transfer transaction"
             }
             transaction {
-                input(TowerContract::class.java.name, iou)
-                output(TowerContract::class.java.name, iou.withNewLender(CHARLIE.party))
-                command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerContract.Commands.AgreeTowerRentalAgreement())
+                input(TowerRentalContract::class.java.name, iou)
+                output(TowerRentalContract::class.java.name, iou.withNewLender(CHARLIE.party))
+                command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
                 this.verifies()
             }
         }

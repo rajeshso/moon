@@ -1,6 +1,6 @@
 package com.n2.moon.tower.states
 
-import com.n2.moon.tower.contracts.TowerContract
+import com.n2.moon.tower.contracts.TowerRentalContract
 import net.corda.core.contracts.Amount
 import net.corda.core.contracts.BelongsToContract
 import net.corda.core.contracts.LinearState
@@ -14,7 +14,7 @@ import java.util.*
  *
  * Remove the "val data: String = "data" property before starting the [TowerState] tasks.
  */
-@BelongsToContract(TowerContract::class)
+@BelongsToContract(TowerRentalContract::class)
 data class TowerState(val amount: Amount<Currency>,
                       val lender: Party,
                       val borrower: Party,

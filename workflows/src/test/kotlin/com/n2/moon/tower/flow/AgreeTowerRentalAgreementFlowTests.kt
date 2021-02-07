@@ -1,6 +1,6 @@
 package com.n2.moon.tower.flow
 
-import com.n2.moon.tower.contracts.TowerContract
+import com.n2.moon.tower.contracts.TowerRentalContract
 import com.n2.moon.tower.flows.AgreeTowerRentalAgreementFlow
 import com.n2.moon.tower.flows.AgreeTowerRentalAgreementFlowResponder
 import com.n2.moon.tower.flows.ProposeTowerRentalAgreementFlow
@@ -100,7 +100,7 @@ class AgreeTowerRentalAgreementFlowTests {
         val outputTower = ptx.tx.outputs.single().data as TowerState
         println("Output state: $outputTower")
         val command = ptx.tx.commands.single()
-        assert(command.value == TowerContract.Commands.AgreeTowerRentalAgreement())
+        assert(command.value == TowerRentalContract.Commands.AgreeTowerRentalAgreement())
         ptx.verifySignaturesExcept(b.info.chooseIdentityAndCert().party.owningKey, c.info.chooseIdentityAndCert().party.owningKey,
                 mockNetwork.defaultNotaryNode.info.legalIdentitiesAndCerts.first().owningKey)
     }

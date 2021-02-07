@@ -1,6 +1,6 @@
 package com.n2.moon.tower.flow
 
-import com.n2.moon.tower.contracts.TowerContract
+import com.n2.moon.tower.contracts.TowerRentalContract
 import com.n2.moon.tower.flows.ProposeTowerRentalAgreementFlow
 import com.n2.moon.tower.flows.ProposeTowerRentalAgreementFlowResponder
 import com.n2.moon.tower.states.TowerState
@@ -63,7 +63,7 @@ class ProposeTowerRentalAgreementFlowTests {
      * - Create a [TransactionBuilder] and pass it a notary reference.
      * -- A notary [Party] object can be obtained from [FlowLogic.serviceHub.networkMapCache].
      * -- In this training project there is only one notary
-     * - Create an [TowerContract.Commands.ProposeTowerRentalAgreement] inside a new [Command].
+     * - Create an [TowerRentalContract.Commands.ProposeTowerRentalAgreement] inside a new [Command].
      * -- The required signers will be the same as the state's participants
      * -- Add the [Command] to the transaction builder [addCommand].
      * - Use the flow's [TowerState] parameter as the output state with [addOutputState]
@@ -88,7 +88,7 @@ class ProposeTowerRentalAgreementFlowTests {
         assert(ptx.tx.inputs.isEmpty())
         assert(ptx.tx.outputs.single().data is TowerState)
         val command = ptx.tx.commands.single()
-        assert(command.value is TowerContract.Commands.ProposeTowerRentalAgreement)
+        assert(command.value is TowerRentalContract.Commands.ProposeTowerRentalAgreement)
         assert(command.signers.toSet() == towerState.participants.map { it.owningKey }.toSet())
         ptx.verifySignaturesExcept(
             borrower.owningKey,
@@ -98,7 +98,7 @@ class ProposeTowerRentalAgreementFlowTests {
 
     /**
      * Task 2.
-     * Now we have a well formed transaction, we need to properly verify it using the [TowerContract].
+     * Now we have a well formed transaction, we need to properly verify it using the [TowerRentalContract].
      * TODO: Amend the [ProposeTowerRentalAgreementFlow] to verify the transaction as well as sign it.
      * Hint: You can verify on the builder directly prior to finalizing the transaction. This way
      * you can confirm the transaction prior to making it immutable with the signature.

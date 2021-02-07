@@ -2,7 +2,7 @@ package com.n2.moon.tower.flows
 
 
 import co.paralleluniverse.fibers.Suspendable
-import com.n2.moon.tower.contracts.TowerContract
+import com.n2.moon.tower.contracts.TowerRentalContract
 import com.n2.moon.tower.states.TowerState
 import net.corda.core.contracts.Command
 import net.corda.core.contracts.requireThat
@@ -36,13 +36,13 @@ class ProposeTowerRentalAgreementFlow(val state: TowerState): FlowLogic<SignedTr
 
         // Step 2. Create a new issue command.
         // Remember that a command is a CommandData object and a list of CompositeKeys
-        val issueCommand = Command(TowerContract.Commands.ProposeTowerRentalAgreement(), state.participants.map { it.owningKey })
+        val issueCommand = Command(TowerRentalContract.Commands.ProposeTowerRentalAgreement(), state.participants.map { it.owningKey })
 
         // Step 3. Create a new TransactionBuilder object.
         val builder = TransactionBuilder(notary = notary)
 
         // Step 4. Add the iou as an output state, as well as a command to the transaction builder.
-        builder.addOutputState(state, TowerContract.TOWER_CONTRACT_ID)
+        builder.addOutputState(state, TowerRentalContract.TOWER_CONTRACT_ID)
         builder.addCommand(issueCommand)
 
         // Step 5. Verify and sign it with our KeyPair.

@@ -8,12 +8,12 @@ import net.corda.finance.contracts.asset.Cash
 import net.corda.finance.contracts.utils.sumCash
 /**
  * This is where you'll add the contract code which defines how the [TowerState] behaves. Look at the unit tests in
- * [TowerContractTests] for instructions on how to complete the [TowerContract] class.
+ * [TowerRentalContractTests] for instructions on how to complete the [TowerRentalContract] class.
  */
-class TowerContract : Contract {
+class TowerRentalContract : Contract {
     companion object {
         @JvmStatic
-        val TOWER_CONTRACT_ID = "com.n2.moon.tower.contracts.TowerContract"
+        val TOWER_CONTRACT_ID = "com.n2.moon.tower.contracts.TowerRentalContract"
     }
 
     /**
@@ -30,7 +30,7 @@ class TowerContract : Contract {
     }
 
     /**
-     * The contract code for the [TowerContract].
+     * The contract code for the [TowerRentalContract].
      * The constraints are self documenting so don't require any additional explanation.
      */
     override fun verify(tx: LedgerTransaction) {

@@ -2,7 +2,7 @@ package com.n2.moon.tower.flows
 
 
 import co.paralleluniverse.fibers.Suspendable
-import com.n2.moon.tower.contracts.TowerContract
+import com.n2.moon.tower.contracts.TowerRentalContract
 import com.n2.moon.tower.states.TowerState
 import net.corda.confidential.IdentitySyncFlow
 import net.corda.core.contracts.Amount
@@ -61,7 +61,7 @@ class RejectTowerRentalAgreementFlow(val linearId: UniqueIdentifier, val amount:
         val (_, cashKeys) = CashUtils.generateSpend(serviceHub, builder, amount, ourIdentityAndCert, counterparty)
 
         // Step 6. Add the Tower input state and settle command to the transaction builder.
-        val settleCommand = Command(TowerContract.Commands.RejectTowerRentalAgreement(), listOf(counterparty.owningKey, ourIdentity.owningKey))
+        val settleCommand = Command(TowerRentalContract.Commands.RejectTowerRentalAgreement(), listOf(counterparty.owningKey, ourIdentity.owningKey))
         // Add the input Tower and Tower settle command.
         builder.addCommand(settleCommand)
         builder.addInputState(iouToSettle)
@@ -70,7 +70,7 @@ class RejectTowerRentalAgreementFlow(val linearId: UniqueIdentifier, val amount:
         val amountRemaining = iouToSettle.state.data.amount - iouToSettle.state.data.paid - amount
         if (amountRemaining > Amount(0, amount.token)) {
             val settledTower: TowerState = iouToSettle.state.data.pay(amount)
-            builder.addOutputState(settledTower, TowerContract.TOWER_CONTRACT_ID)
+            builder.addOutputState(settledTower, TowerRentalContract.TOWER_CONTRACT_ID)
         }
 
         // Step 8. Verify and sign the transaction.
