@@ -178,21 +178,21 @@ class ProposeTowerRentalAgreementFlowTests {
 
     /**
      * Task 5.
-     * For obvious reasons, the identity of the lender and borrower must be different.
-     * TODO: Add a contract constraint to check the lender is not the borrower.
+     * For obvious reasons, the identity of the proposer and borrower must be different.
+     * TODO: Add a contract constraint to check the proposer is not the borrower.
      * Hint:
      * - You can use the [TowerRentalProposalState.proposerParty] and [TowerRentalProposalState.agreementParty] properties.
      * - This check must be made before the checking who has signed.
      */
     @Test
-    fun lenderAndBorrowerCannotBeTheSame() {
+    fun proposerAndBorrowerCannotBeTheSame() {
         val towerState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party)
-        val borrowerIsLenderIou = TowerRentalProposalState(10.POUNDS, ALICE.party, ALICE.party)
+        val borrowerIsProposerIou = TowerRentalProposalState(10.POUNDS, ALICE.party, ALICE.party)
         ledgerServices.ledger {
             transaction {
                 command(listOf(ALICE.publicKey, BOB.publicKey),TowerRentalContract.Commands.ProposeTowerRentalAgreement())
-                output(TowerRentalContract.TOWER_CONTRACT_ID, borrowerIsLenderIou)
-                this `fails with` "The lender and borrower cannot have the same identity."
+                output(TowerRentalContract.TOWER_CONTRACT_ID, borrowerIsProposerIou)
+                this `fails with` "The proposer and borrower cannot have the same identity."
             }
             transaction {
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.ProposeTowerRentalAgreement())
@@ -222,33 +222,33 @@ class ProposeTowerRentalAgreementFlowTests {
      * - https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/to-set.html
      */
     @Test
-    fun lenderAndBorrowerMustSignIssueTransaction() {
+    fun proposerAndBorrowerMustSignIssueTransaction() {
         val towerState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party)
         ledgerServices.ledger {
             transaction {
                 command(DUMMY.publicKey, TowerRentalContract.Commands.ProposeTowerRentalAgreement())
                 output(TowerRentalContract.TOWER_CONTRACT_ID, towerState)
-                this `fails with` "Both lender and borrower together only may sign Tower issue transaction."
+                this `fails with` "Both proposer and borrower together only may sign Tower issue transaction."
             }
             transaction {
                 command(ALICE.publicKey, TowerRentalContract.Commands.ProposeTowerRentalAgreement())
                 output(TowerRentalContract.TOWER_CONTRACT_ID, towerState)
-                this `fails with` "Both lender and borrower together only may sign Tower issue transaction."
+                this `fails with` "Both proposer and borrower together only may sign Tower issue transaction."
             }
             transaction {
                 command(BOB.publicKey, TowerRentalContract.Commands.ProposeTowerRentalAgreement())
                 output(TowerRentalContract.TOWER_CONTRACT_ID, towerState)
-                this `fails with` "Both lender and borrower together only may sign Tower issue transaction."
+                this `fails with` "Both proposer and borrower together only may sign Tower issue transaction."
             }
             transaction {
                 command(listOf(BOB.publicKey, BOB.publicKey, BOB.publicKey), TowerRentalContract.Commands.ProposeTowerRentalAgreement())
                 output(TowerRentalContract.TOWER_CONTRACT_ID, towerState)
-                this `fails with` "Both lender and borrower together only may sign Tower issue transaction."
+                this `fails with` "Both proposer and borrower together only may sign Tower issue transaction."
             }
             transaction {
                 command(listOf(BOB.publicKey, BOB.publicKey, MINICORP.publicKey, ALICE.publicKey), TowerRentalContract.Commands.ProposeTowerRentalAgreement())
                 output(TowerRentalContract.TOWER_CONTRACT_ID, towerState)
-                this `fails with` "Both lender and borrower together only may sign Tower issue transaction."
+                this `fails with` "Both proposer and borrower together only may sign Tower issue transaction."
             }
             transaction {
                 command(listOf(BOB.publicKey, BOB.publicKey, BOB.publicKey, ALICE.publicKey), TowerRentalContract.Commands.ProposeTowerRentalAgreement())

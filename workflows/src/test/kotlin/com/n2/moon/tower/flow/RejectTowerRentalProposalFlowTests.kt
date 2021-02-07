@@ -116,14 +116,14 @@ class RejectTowerRentalProposalFlowTests {
                     outputTower,
                     inputTower.pay(5.POUNDS))
             // Sum all the output cash. This is complicated as there may be multiple cash output states with not all of them
-            // being assigned to the lender.
+            // being assigned to the proposer.
             val outputCashSum = ledgerTx.outputs
                     .map { it.data }
                     .filterIsInstance<Cash.State>()
                     .filter { it.owner == b.info.chooseIdentityAndCert().party }
                     .sumCash()
                     .withoutIssuer()
-            // Compare the cash assigned to the lender with the amount claimed is being settled by the borrower.
+            // Compare the cash assigned to the proposer with the amount claimed is being settled by the borrower.
             assertEquals(
                     outputCashSum,
                     (inputTower.amount - inputTower.paid - outputTower.paid))
@@ -154,7 +154,7 @@ class RejectTowerRentalProposalFlowTests {
 
     /**
      * Task 3.
-     * The borrower must have at least SOME cash in the right currency to pay the lender.
+     * The borrower must have at least SOME cash in the right currency to pay the proposer.
      * TODO: Add a check in the flow to ensure that the borrower has a balance of cash in the right currency.
      * Hint:
      * - Use [serviceHub.getCashBalances] - it is a map which can be queried by [Currency].
@@ -172,8 +172,8 @@ class RejectTowerRentalProposalFlowTests {
 
     /**
      * Task 4.
-     * The borrower must have enough cash in the right currency to pay the lender.
-     * TODO: Add a check in the flow to ensure that the borrower has enough cash to pay the lender.
+     * The borrower must have enough cash in the right currency to pay the proposer.
+     * TODO: Add a check in the flow to ensure that the borrower has enough cash to pay the proposer.
      * Hint: Add another if statement similar to the one required above.
      */
     @Test
@@ -190,7 +190,7 @@ class RejectTowerRentalProposalFlowTests {
     /**
      * Task 5.
      * We need to get the transaction signed by the other party.
-     * TODO: Use a subFlow call to [initateFlow] and the [SignTransactionFlow] to get a signature from the lender.
+     * TODO: Use a subFlow call to [initateFlow] and the [SignTransactionFlow] to get a signature from the proposer.
      */
     @Test
     fun flowReturnsTransactionSignedByBothParties() {
@@ -209,7 +209,7 @@ class RejectTowerRentalProposalFlowTests {
     /**
      * Task 6.
      * We need to get the transaction signed by the notary service
-     * TODO: Use a subFlow call to the [FinalityFlow] to get a signature from the lender.
+     * TODO: Use a subFlow call to the [FinalityFlow] to get a signature from the proposer.
      */
     @Test
     fun flowReturnsCommittedTransaction() {

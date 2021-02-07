@@ -46,13 +46,13 @@ class TowerRentalProposalStateTests {
 
     /**
      * Task 2.
-     * TODO: Add a 'lender' property of type [Party] to the [TowerRentalProposalState] class to get this test to pass.
+     * TODO: Add a 'proposer' property of type [Party] to the [TowerRentalProposalState] class to get this test to pass.
      */
     @Test
-    fun hasLenderFieldOfCorrectType() {
-        // Does the lender field exist?
+    fun hasProposerFieldOfCorrectType() {
+        // Does the proposer field exist?
         TowerRentalProposalState::class.java.getDeclaredField("proposerParty")
-        // Is the lender field of the correct type?
+        // Is the proposer field of the correct type?
         assertEquals(TowerRentalProposalState::class.java.getDeclaredField("proposerParty").type, Party::class.java)
     }
 
@@ -93,11 +93,11 @@ class TowerRentalProposalStateTests {
 
     /**
      * Task 5.
-     * TODO: Include the lender within the [TowerRentalProposalState.participants] list
+     * TODO: Include the proposer within the [TowerRentalProposalState.participants] list
      * Hint: [listOf] takes any number of parameters and will add them to the list
      */
     @Test
-    fun lenderIsParticipant() {
+    fun proposerIsParticipant() {
         val towerState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party)
         assertNotEquals(towerState.participants.indexOf(ALICE.party), -1)
     }
@@ -149,20 +149,20 @@ class TowerRentalProposalStateTests {
     /**
      * Task 9.
      * TODO: Ensure parameters are ordered correctly.
-     * Hint: Make sure that the lender and borrower fields are not in the wrong order as this may cause some
+     * Hint: Make sure that the proposer and borrower fields are not in the wrong order as this may cause some
      * confusion in subsequent tasks!
      */
     @Test
     fun checkTowerStateParameterOrdering() {
         val fields = TowerRentalProposalState::class.java.declaredFields
         val amountIdx = fields.indexOf(TowerRentalProposalState::class.java.getDeclaredField("amount"))
-        val lenderIdx = fields.indexOf(TowerRentalProposalState::class.java.getDeclaredField("proposerParty"))
+        val proposerIdx = fields.indexOf(TowerRentalProposalState::class.java.getDeclaredField("proposerParty"))
         val borrowerIdx = fields.indexOf(TowerRentalProposalState::class.java.getDeclaredField("agreementParty"))
         val paidIdx = fields.indexOf(TowerRentalProposalState::class.java.getDeclaredField("paid"))
         val linearIdIdx = fields.indexOf(TowerRentalProposalState::class.java.getDeclaredField("linearId"))
 
-        assert(amountIdx < lenderIdx)
-        assert(lenderIdx < borrowerIdx)
+        assert(amountIdx < proposerIdx)
+        assert(proposerIdx < borrowerIdx)
         assert(borrowerIdx < paidIdx)
         assert(paidIdx < linearIdIdx)
     }
@@ -188,12 +188,12 @@ class TowerRentalProposalStateTests {
 
     /**
      * Task 11.
-     * TODO: Add a helper method called [withNewLender] that can be called from an [TowerRentalProposalState] to change the Tower's lender.
+     * TODO: Add a helper method called [withNewProposer] that can be called from an [TowerRentalProposalState] to change the Tower's proposer.
      */
     @Test
-    fun checkWithNewLenderHelperMethod() {
+    fun checkWithNewProposerHelperMethod() {
         val towerState = TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party)
-        assertEquals(MINICORP.party, towerState.withNewLender(MINICORP.party).proposerParty)
-        assertEquals(MEGACORP.party, towerState.withNewLender(MINICORP.party).withNewLender(MEGACORP.party).proposerParty)
+        assertEquals(MINICORP.party, towerState.withNewProposer(MINICORP.party).proposerParty)
+        assertEquals(MEGACORP.party, towerState.withNewProposer(MINICORP.party).withNewProposer(MEGACORP.party).proposerParty)
     }
 }

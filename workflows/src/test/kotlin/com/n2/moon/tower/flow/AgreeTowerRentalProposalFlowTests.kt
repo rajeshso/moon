@@ -73,19 +73,19 @@ class AgreeTowerRentalProposalFlowTests {
      * - You can use the [serviceHub.vaultService.queryBy] method to get the latest linear states of a particular
      *   type from the vault. It returns a list of states matching your query.
      * - Use the [UniqueIdentifier] which is passed into the flow to retrieve the correct [TowerRentalProposalState].
-     * - Use the [TowerRentalProposalState.withNewLender] method to create a copy of the state with a new lender.
+     * - Use the [TowerRentalProposalState.withNewProposer] method to create a copy of the state with a new proposer.
      * - Create a Command - we will need to use the Transfer command.
      * - Remember, as we are involving three parties we will need to collect three signatures, so need to add three
      *   [PublicKey]s to the Command's signers list. We can get the signers from the input Tower and the new Tower you
-     *   have just created with the new lender.
+     *   have just created with the new proposer.
      * - Verify and sign the transaction as you did with the [IntallTowerFlow].
      * - Return the partially signed transaction.
      */
     @Test
     fun flowReturnsCorrectlyFormedPartiallySignedTransaction() {
-        val lender = a.info.chooseIdentityAndCert().party
+        val proposer = a.info.chooseIdentityAndCert().party
         val borrower = b.info.chooseIdentityAndCert().party
-        val stx = installTower(TowerRentalProposalState(10.POUNDS, lender, borrower))
+        val stx = installTower(TowerRentalProposalState(10.POUNDS, proposer, borrower))
         val inputTower = stx.tx.outputs.single().data as TowerRentalProposalState
         val flow = AgreeTowerRentalProposalFlow(inputTower.linearId, c.info.chooseIdentityAndCert().party)
         val future = a.startFlow(flow)
@@ -107,18 +107,18 @@ class AgreeTowerRentalProposalFlowTests {
 
     /**
      * Task 2.
-     * We need to make sure that only the current lender can execute this flow.
-     * TODO: Amend the [ProposeTowerRentalAgreement] to only allow the current lender to execute the flow.
+     * We need to make sure that only the current proposer can execute this flow.
+     * TODO: Amend the [ProposeTowerRentalAgreement] to only allow the current proposer to execute the flow.
      * Hint:
      * - Remember: You can use the node's identity and compare it to the [Party] object within the [TowerRentalProposalState] you
      *   retrieved from the vault.
      * - Throw an [IllegalArgumentException] if the wrong party attempts to run the flow!
      */
     @Test
-    fun flowCanOnlyBeRunByCurrentLender() {
-        val lender = a.info.chooseIdentityAndCert().party
+    fun flowCanOnlyBeRunByCurrentProposer() {
+        val proposer = a.info.chooseIdentityAndCert().party
         val borrower = b.info.chooseIdentityAndCert().party
-        val stx = installTower(TowerRentalProposalState(10.POUNDS, lender, borrower))
+        val stx = installTower(TowerRentalProposalState(10.POUNDS, proposer, borrower))
         val inputTower = stx.tx.outputs.single().data as TowerRentalProposalState
         val flow = AgreeTowerRentalProposalFlow(inputTower.linearId, c.info.chooseIdentityAndCert().party)
         val future = b.startFlow(flow)
@@ -128,16 +128,16 @@ class AgreeTowerRentalProposalFlowTests {
 
     /**
      * Task 3.
-     * Check that an [TowerRentalProposalState] cannot be transferred to the same lender.
+     * Check that an [TowerRentalProposalState] cannot be transferred to the same proposer.
      * TODO: You shouldn't have to do anything additional to get this test to pass. Belts and Braces!
      */
     @Test
     fun towerCannotBeTransferredToSameParty() {
-        val lender = a.info.chooseIdentityAndCert().party
+        val proposer = a.info.chooseIdentityAndCert().party
         val borrower = b.info.chooseIdentityAndCert().party
-        val stx = installTower(TowerRentalProposalState(10.POUNDS, lender, borrower))
+        val stx = installTower(TowerRentalProposalState(10.POUNDS, proposer, borrower))
         val inputTower = stx.tx.outputs.single().data as TowerRentalProposalState
-        val flow = AgreeTowerRentalProposalFlow(inputTower.linearId, lender)
+        val flow = AgreeTowerRentalProposalFlow(inputTower.linearId, proposer)
         val future = a.startFlow(flow)
         mockNetwork.runNetwork()
         // Check that we can't transfer an Tower to ourselves.
@@ -146,15 +146,15 @@ class AgreeTowerRentalProposalFlowTests {
 
     /**
      * Task 4.
-     * Get the borrowers and the new lenders signatures.
+     * Get the borrowers and the new proposers signatures.
      * TODO: Amend the [ProposeTowerRentalAgreement] to handle collecting signatures from multiple parties.
      * Hint: use [initiateFlow] and the [CollectSignaturesFlow] in the same way you did for the [IntallTowerFlow].
      */
     @Test
     fun flowReturnsTransactionSignedByAllParties() {
-        val lender = a.info.chooseIdentityAndCert().party
+        val proposer = a.info.chooseIdentityAndCert().party
         val borrower = b.info.chooseIdentityAndCert().party
-        val stx = installTower(TowerRentalProposalState(10.POUNDS, lender, borrower))
+        val stx = installTower(TowerRentalProposalState(10.POUNDS, proposer, borrower))
         val inputTower = stx.tx.outputs.single().data as TowerRentalProposalState
         val flow = AgreeTowerRentalProposalFlow(inputTower.linearId, c.info.chooseIdentityAndCert().party)
         val future = a.startFlow(flow)
@@ -165,13 +165,13 @@ class AgreeTowerRentalProposalFlowTests {
     /**
      * Task 5.
      * We need to get the transaction signed by the notary service
-     * TODO: Use a subFlow call to the [FinalityFlow] to get a signature from the lender.
+     * TODO: Use a subFlow call to the [FinalityFlow] to get a signature from the proposer.
      */
     @Test
     fun flowReturnsTransactionSignedByAllPartiesAndNotary() {
-        val lender = a.info.chooseIdentityAndCert().party
+        val proposer = a.info.chooseIdentityAndCert().party
         val borrower = b.info.chooseIdentityAndCert().party
-        val stx = installTower(TowerRentalProposalState(10.POUNDS, lender, borrower))
+        val stx = installTower(TowerRentalProposalState(10.POUNDS, proposer, borrower))
         val inputTower = stx.tx.outputs.single().data as TowerRentalProposalState
         val flow = AgreeTowerRentalProposalFlow(inputTower.linearId, c.info.chooseIdentityAndCert().party)
         val future = a.startFlow(flow)

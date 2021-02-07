@@ -76,7 +76,7 @@ class  AgreeTowerRentalAgreementTests {
             }
             transaction {
                 input(TowerRentalContract::class.java.name, iou)
-                output(TowerRentalContract::class.java.name, iou.withNewLender(CHARLIE.party))
+                output(TowerRentalContract::class.java.name, iou.withNewProposer(CHARLIE.party))
                 command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
                 this.verifies()
             }
@@ -97,7 +97,7 @@ class  AgreeTowerRentalAgreementTests {
             transaction {
                 input(TowerRentalContract::class.java.name, iou)
                 input(TowerRentalContract::class.java.name, DummyState())
-                output(TowerRentalContract::class.java.name, iou.withNewLender(CHARLIE.party))
+                output(TowerRentalContract::class.java.name, iou.withNewProposer(CHARLIE.party))
                 command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
                 this `fails with` "An Tower transfer transaction should only consume one input state."
             }
@@ -113,14 +113,14 @@ class  AgreeTowerRentalAgreementTests {
             }
             transaction {
                 input(TowerRentalContract::class.java.name, iou)
-                output(TowerRentalContract::class.java.name, iou.withNewLender(CHARLIE.party))
+                output(TowerRentalContract::class.java.name, iou.withNewProposer(CHARLIE.party))
                 output(TowerRentalContract::class.java.name, DummyState())
                 command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
                 this `fails with` "An Tower transfer transaction should only create one output state."
             }
             transaction {
                 input(TowerRentalContract::class.java.name, iou)
-                output(TowerRentalContract::class.java.name, iou.withNewLender(CHARLIE.party))
+                output(TowerRentalContract::class.java.name, iou.withNewProposer(CHARLIE.party))
                 command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
                 this.verifies()
             }
@@ -129,40 +129,40 @@ class  AgreeTowerRentalAgreementTests {
 
     /**
      * Task 3.
-     * TODO: Add a constraint to the contract code to ensure only the lender property can change when transferring IOUs.
+     * TODO: Add a constraint to the contract code to ensure only the proposer property can change when transferring IOUs.
      * Hint:
      * - You can use the [TowerRentalProposalState.copy] method.
-     * - You can compare a copy of the input to the output with the lender of the output as the lender of the input.
+     * - You can compare a copy of the input to the output with the proposer of the output as the proposer of the input.
      * - You'll need references to the input and output ious.
      * - Remember you need to cast the [ContractState]s to [TowerRentalProposalState]s.
-     * - It's easier to take this approach then check all properties other than the lender haven't changed, including
+     * - It's easier to take this approach then check all properties other than the proposer haven't changed, including
      *   the [linearId] and the [contract]!
      */
     @Test
-    fun onlyTheLenderMayChange() {
+    fun onlyTheProposerMayChange() {
         val iou = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party)
         ledgerServices.ledger {
             transaction {
                 input(TowerRentalContract::class.java.name, TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party))
                 output(TowerRentalContract::class.java.name, TowerRentalProposalState(1.DOLLARS, ALICE.party, BOB.party))
                 command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
-                this `fails with` "Only the lender property may change."
+                this `fails with` "Only the proposer property may change."
             }
             transaction {
                 input(TowerRentalContract::class.java.name, TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party))
                 output(TowerRentalContract::class.java.name, TowerRentalProposalState(10.DOLLARS, ALICE.party, CHARLIE.party))
                 command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
-                this `fails with` "Only the lender property may change."
+                this `fails with` "Only the proposer property may change."
             }
             transaction {
                 input(TowerRentalContract::class.java.name, TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party, 5.DOLLARS))
                 output(TowerRentalContract::class.java.name, TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party, 10.DOLLARS))
                 command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
-                this `fails with` "Only the lender property may change."
+                this `fails with` "Only the proposer property may change."
             }
             transaction {
                 input(TowerRentalContract::class.java.name, iou)
-                output(TowerRentalContract::class.java.name, iou.withNewLender(CHARLIE.party))
+                output(TowerRentalContract::class.java.name, iou.withNewProposer(CHARLIE.party))
                 command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
                 this.verifies()
             }
@@ -171,22 +171,22 @@ class  AgreeTowerRentalAgreementTests {
 
     /**
      * Task 4.
-     * It is fairly obvious that in a transfer IOU transaction the lender must change.
-     * TODO: Add a constraint to check the lender has changed in the output IOU.
+     * It is fairly obvious that in a transfer IOU transaction the proposer must change.
+     * TODO: Add a constraint to check the proposer has changed in the output IOU.
      */
     @Test
-    fun theLenderMustChange() {
+    fun theProposerMustChange() {
         val iou = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party)
         ledgerServices.ledger {
             transaction {
                 input(TowerRentalContract::class.java.name, iou)
                 output(TowerRentalContract::class.java.name, iou)
                 command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
-                this `fails with` "The lender property must change in a transfer."
+                this `fails with` "The proposer property must change in a transfer."
             }
             transaction {
                 input(TowerRentalContract::class.java.name, iou)
-                output(TowerRentalContract::class.java.name, iou.withNewLender(CHARLIE.party))
+                output(TowerRentalContract::class.java.name, iou.withNewProposer(CHARLIE.party))
                 command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
                 this.verifies()
             }
@@ -196,7 +196,7 @@ class  AgreeTowerRentalAgreementTests {
     /**
      * Task 5.
      * All the participants in a transfer IOU transaction must sign.
-     * TODO: Add a constraint to check the old lender, the new lender and the recipient have signed.
+     * TODO: Add a constraint to check the old proposer, the new proposer and the recipient have signed.
      */
     @Test
     fun allParticipantsMustSign() {
@@ -204,37 +204,37 @@ class  AgreeTowerRentalAgreementTests {
         ledgerServices.ledger {
             transaction {
                 input(TowerRentalContract::class.java.name, iou)
-                output(TowerRentalContract::class.java.name, iou.withNewLender(CHARLIE.party))
+                output(TowerRentalContract::class.java.name, iou.withNewProposer(CHARLIE.party))
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
-                this `fails with` "The borrower, old lender and new lender only must sign an Tower transfer transaction"
+                this `fails with` "The borrower, old proposer and new proposer only must sign an Tower transfer transaction"
             }
             transaction {
                 input(TowerRentalContract::class.java.name, iou)
-                output(TowerRentalContract::class.java.name, iou.withNewLender(CHARLIE.party))
+                output(TowerRentalContract::class.java.name, iou.withNewProposer(CHARLIE.party))
                 command(listOf(ALICE.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
-                this `fails with` "The borrower, old lender and new lender only must sign an Tower transfer transaction"
+                this `fails with` "The borrower, old proposer and new proposer only must sign an Tower transfer transaction"
             }
             transaction {
                 input(TowerRentalContract::class.java.name, iou)
-                output(TowerRentalContract::class.java.name, iou.withNewLender(CHARLIE.party))
+                output(TowerRentalContract::class.java.name, iou.withNewProposer(CHARLIE.party))
                 command(listOf(BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
-                this `fails with` "The borrower, old lender and new lender only must sign an Tower transfer transaction"
+                this `fails with` "The borrower, old proposer and new proposer only must sign an Tower transfer transaction"
             }
             transaction {
                 input(TowerRentalContract::class.java.name, iou)
-                output(TowerRentalContract::class.java.name, iou.withNewLender(CHARLIE.party))
+                output(TowerRentalContract::class.java.name, iou.withNewProposer(CHARLIE.party))
                 command(listOf(ALICE.publicKey, BOB.publicKey, MINICORP.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
-                this `fails with` "The borrower, old lender and new lender only must sign an Tower transfer transaction"
+                this `fails with` "The borrower, old proposer and new proposer only must sign an Tower transfer transaction"
             }
             transaction {
                 input(TowerRentalContract::class.java.name, iou)
-                output(TowerRentalContract::class.java.name, iou.withNewLender(CHARLIE.party))
+                output(TowerRentalContract::class.java.name, iou.withNewProposer(CHARLIE.party))
                 command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey, MINICORP.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
-                this `fails with` "The borrower, old lender and new lender only must sign an Tower transfer transaction"
+                this `fails with` "The borrower, old proposer and new proposer only must sign an Tower transfer transaction"
             }
             transaction {
                 input(TowerRentalContract::class.java.name, iou)
-                output(TowerRentalContract::class.java.name, iou.withNewLender(CHARLIE.party))
+                output(TowerRentalContract::class.java.name, iou.withNewProposer(CHARLIE.party))
                 command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
                 this.verifies()
             }

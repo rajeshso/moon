@@ -24,7 +24,7 @@ import net.corda.core.transactions.TransactionBuilder
 @InitiatingFlow
 @StartableByRPC
 class AgreeTowerRentalProposalFlow(val linearId: UniqueIdentifier,
-                                   val newLender: Party): FlowLogic<SignedTransaction>() {
+                                   val newProposer: Party): FlowLogic<SignedTransaction>() {
     @Suspendable
     override fun call(): SignedTransaction {
 
@@ -35,14 +35,14 @@ class AgreeTowerRentalProposalFlow(val linearId: UniqueIdentifier,
 
         // Stage 2. This flow can only be initiated by the current recipient.
         if (ourIdentity != inputIou.proposerParty) {
-            throw IllegalArgumentException("Tower transfer can only be initiated by the Tower lender.")
+            throw IllegalArgumentException("Tower transfer can only be initiated by the Tower proposer.")
         }
 
-        // Stage 3. Create the new Tower state reflecting a new lender.
-        val outputIou = inputIou.withNewLender(newLender)
+        // Stage 3. Create the new Tower state reflecting a new proposer.
+        val outputIou = inputIou.withNewProposer(newProposer)
 
         // Stage 4. Create the transfer command.
-        val signers = (inputIou.participants + newLender).map { it.owningKey }
+        val signers = (inputIou.participants + newProposer).map { it.owningKey }
         val transferCommand = Command(TowerRentalContract.Commands.AgreeTowerRentalAgreement(), signers)
 
         // Stage 5. Get a reference to a transaction builder.
@@ -69,9 +69,9 @@ class AgreeTowerRentalProposalFlow(val linearId: UniqueIdentifier,
         builder.verify(serviceHub)
         val ptx = serviceHub.signInitialTransaction(builder)
 
-        // Stage 8. Collect signature from borrower and the new lender and add it to the transaction.
+        // Stage 8. Collect signature from borrower and the new proposer and add it to the transaction.
         // This also verifies the transaction and checks the signatures.
-        val sessions = (inputIou.participants - ourIdentity + newLender).map { initiateFlow(it) }.toSet()
+        val sessions = (inputIou.participants - ourIdentity + newProposer).map { initiateFlow(it) }.toSet()
         val stx = subFlow(CollectSignaturesFlow(ptx, sessions))
 
         // Stage 9. Notarise and record the transaction in our vaults.

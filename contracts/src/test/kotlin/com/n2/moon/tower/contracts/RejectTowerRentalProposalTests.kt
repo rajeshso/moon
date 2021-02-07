@@ -203,12 +203,12 @@ class RejectTowerRentalProposalTests {
     /**
      * Task 5.
      * Not only do we need to check that [Cash] output states are present but we need to check that the payer is
-     * correctly assigning the lender as the new owner of these states.
+     * correctly assigning the proposer as the new owner of these states.
      * TODO: Add a constraint to check that we are the new owner of the output cash.
      * Hint:
-     * - Not all of the input cash may be assigned to the lender. Some of it may be sent back to the payer as change.
-     * - We need to use the [Cash.State.owner] property to check to see that it is the value of the lender public key.
-     * - Use [filter] to filter over the list of cash states to get the ones which are being assigned to the lender.
+     * - Not all of the input cash may be assigned to the proposer. Some of it may be sent back to the payer as change.
+     * - We need to use the [Cash.State.owner] property to check to see that it is the value of the proposer public key.
+     * - Use [filter] to filter over the list of cash states to get the ones which are being assigned to the proposer.
      * - Once we have this filtered list, we can sum the cash being paid so we know how much is being settled.
      */
     @Test
@@ -225,7 +225,7 @@ class RejectTowerRentalProposalTests {
                 output(Cash.PROGRAM_ID, "outputs cash", invalidCashPayment.ownableState)
                 command(BOB.publicKey, invalidCashPayment.command)
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.RejectTowerRentalAgreement())
-                this `fails with` "Output cash must be paid to the lender."
+                this `fails with` "Output cash must be paid to the proposer."
             }
             transaction {
                 input(TowerRentalContract.TOWER_CONTRACT_ID, iou)
@@ -241,7 +241,7 @@ class RejectTowerRentalProposalTests {
 
     /**
      * Task 6.
-     * Now we need to sum the cash that is being assigned to the lender and compare this total against how much of the
+     * Now we need to sum the cash that is being assigned to the proposer and compare this total against how much of the
      * IOU is left to pay.
      * TODO: Add a constraint that checks we cannot be paid more than the remaining IOU amount left to pay.
      * Hint:
@@ -402,7 +402,7 @@ class RejectTowerRentalProposalTests {
 
     /**
      * Task 10.
-     * Both the lender and the borrower must have signed an IOU issue transaction.
+     * Both the proposer and the borrower must have signed an IOU issue transaction.
      * TODO: Add a constraint to the contract code that ensures this is the case.
      */
     @Test
@@ -418,7 +418,7 @@ class RejectTowerRentalProposalTests {
                 command(BOB.publicKey, cashPayment.command)
                 output(TowerRentalContract.TOWER_CONTRACT_ID, iou.pay(5.DOLLARS))
                 command(listOf(ALICE.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.RejectTowerRentalAgreement())
-                failsWith("Both lender and borrower together only must sign the Tower settle transaction.")
+                failsWith("Both proposer and borrower together only must sign the Tower settle transaction.")
             }
             transaction {
                 input(Cash.PROGRAM_ID, cash)
@@ -427,7 +427,7 @@ class RejectTowerRentalProposalTests {
                 command(BOB.publicKey, cashPayment.command)
                 output(TowerRentalContract.TOWER_CONTRACT_ID, iou.pay(5.DOLLARS))
                 command(BOB.publicKey, TowerRentalContract.Commands.RejectTowerRentalAgreement())
-                failsWith("Both lender and borrower together only must sign the Tower settle transaction.")
+                failsWith("Both proposer and borrower together only must sign the Tower settle transaction.")
             }
             transaction {
                 input(Cash.PROGRAM_ID, cash)
