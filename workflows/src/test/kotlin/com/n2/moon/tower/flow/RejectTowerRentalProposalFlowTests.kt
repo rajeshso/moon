@@ -3,8 +3,8 @@ package com.n2.moon.tower.flow
 import com.n2.moon.tower.contracts.TowerRentalContract
 import com.n2.moon.tower.flows.InitiateTowerRentalProposalFlow
 import com.n2.moon.tower.flows.InitiateTowerRentalProposalFlowResponder
-import com.n2.moon.tower.flows.RejectTowerRentalAgreementFlow
-import com.n2.moon.tower.flows.RejectTowerRentalAgreementResponder
+import com.n2.moon.tower.flows.ReRejectTowerRentalProposalFlowResponder
+import com.n2.moon.tower.flows.RejectTowerRentalProposalFlow
 import com.n2.moon.tower.states.TowerRentalProposalState
 import net.corda.core.contracts.Amount
 import net.corda.core.contracts.StateAndRef
@@ -36,7 +36,7 @@ import kotlin.test.assertFailsWith
  * Practical exercise instructions Flows part 3.
  * Uncomment the unit tests and use the hints + unit test body to complete the FLows such that the unit tests pass.
  */
-class RejectTowerRentalAgreementFlowTests {
+class RejectTowerRentalProposalFlowTests {
     lateinit var mockNetwork: MockNetwork
     lateinit var a: StartedMockNode
     lateinit var b: StartedMockNode
@@ -52,7 +52,7 @@ class RejectTowerRentalAgreementFlowTests {
         val startedNodes = arrayListOf(a, b, c)
         // For real nodes this happens automatically, but we have to manually register the flow for tests
         startedNodes.forEach { it.registerInitiatedFlow(InitiateTowerRentalProposalFlowResponder::class.java) }
-        startedNodes.forEach { it.registerInitiatedFlow(RejectTowerRentalAgreementResponder::class.java) }
+        startedNodes.forEach { it.registerInitiatedFlow(ReRejectTowerRentalProposalFlowResponder::class.java) }
         mockNetwork.runNetwork()
     }
 
@@ -101,7 +101,7 @@ class RejectTowerRentalAgreementFlowTests {
         val stx = installTower(TowerRentalProposalState(10.POUNDS, b.info.chooseIdentityAndCert().party, a.info.chooseIdentityAndCert().party))
         issueCash(5.POUNDS)
         val inputTower = stx.tx.outputs.single().data as TowerRentalProposalState
-        val flow = RejectTowerRentalAgreementFlow(inputTower.linearId, 5.POUNDS)
+        val flow = RejectTowerRentalProposalFlow(inputTower.linearId, 5.POUNDS)
         val future = a.startFlow(flow)
         mockNetwork.runNetwork()
         val settleResult = future.getOrThrow()
@@ -146,7 +146,7 @@ class RejectTowerRentalAgreementFlowTests {
         val stx = installTower(TowerRentalProposalState(10.POUNDS, b.info.chooseIdentityAndCert().party, a.info.chooseIdentityAndCert().party))
         issueCash(5.POUNDS)
         val inputTower = stx.tx.outputs.single().data as TowerRentalProposalState
-        val flow = RejectTowerRentalAgreementFlow(inputTower.linearId, 5.POUNDS)
+        val flow = RejectTowerRentalProposalFlow(inputTower.linearId, 5.POUNDS)
         val future = b.startFlow(flow)
         mockNetwork.runNetwork()
         assertFailsWith<IllegalArgumentException> { future.getOrThrow() }
@@ -164,7 +164,7 @@ class RejectTowerRentalAgreementFlowTests {
     fun borrowerMustHaveCashInRightCurrency() {
         val stx = installTower(TowerRentalProposalState(10.POUNDS, b.info.chooseIdentityAndCert().party, a.info.chooseIdentityAndCert().party))
         val inputTower = stx.tx.outputs.single().data as TowerRentalProposalState
-        val flow = RejectTowerRentalAgreementFlow(inputTower.linearId, 5.POUNDS)
+        val flow = RejectTowerRentalProposalFlow(inputTower.linearId, 5.POUNDS)
         val future = a.startFlow(flow)
         mockNetwork.runNetwork()
         assertFailsWith<IllegalArgumentException>("Borrower has no GBP to settle.") { future.getOrThrow() }
@@ -181,7 +181,7 @@ class RejectTowerRentalAgreementFlowTests {
         val stx = installTower(TowerRentalProposalState(10.POUNDS, b.info.chooseIdentityAndCert().party, a.info.chooseIdentityAndCert().party))
         issueCash(1.POUNDS)
         val inputTower = stx.tx.outputs.single().data as TowerRentalProposalState
-        val flow = RejectTowerRentalAgreementFlow(inputTower.linearId, 5.POUNDS)
+        val flow = RejectTowerRentalProposalFlow(inputTower.linearId, 5.POUNDS)
         val future = a.startFlow(flow)
         mockNetwork.runNetwork()
         assertFailsWith<IllegalArgumentException>("Borrower has only 1.00 GBP but needs 5.00 GBP to settle.") { future.getOrThrow() }
@@ -197,7 +197,7 @@ class RejectTowerRentalAgreementFlowTests {
         val stx = installTower(TowerRentalProposalState(10.POUNDS, b.info.chooseIdentityAndCert().party, a.info.chooseIdentityAndCert().party))
         issueCash(5.POUNDS)
         val inputTower = stx.tx.outputs.single().data as TowerRentalProposalState
-        val flow = RejectTowerRentalAgreementFlow(inputTower.linearId, 5.POUNDS)
+        val flow = RejectTowerRentalProposalFlow(inputTower.linearId, 5.POUNDS)
         val future = a.startFlow(flow)
         mockNetwork.runNetwork()
         val settleResult = future.getOrThrow()
@@ -216,7 +216,7 @@ class RejectTowerRentalAgreementFlowTests {
         val stx = installTower(TowerRentalProposalState(10.POUNDS, b.info.chooseIdentityAndCert().party, a.info.chooseIdentityAndCert().party))
         issueCash(5.POUNDS)
         val inputTower = stx.tx.outputs.single().data as TowerRentalProposalState
-        val flow = RejectTowerRentalAgreementFlow(inputTower.linearId, 5.POUNDS)
+        val flow = RejectTowerRentalProposalFlow(inputTower.linearId, 5.POUNDS)
         val future = a.startFlow(flow)
         mockNetwork.runNetwork()
         val settleResult = future.getOrThrow()

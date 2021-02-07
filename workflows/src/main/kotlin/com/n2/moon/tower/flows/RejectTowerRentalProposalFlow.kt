@@ -28,7 +28,7 @@ import java.util.*
  */
 @InitiatingFlow
 @StartableByRPC
-class RejectTowerRentalAgreementFlow(val linearId: UniqueIdentifier, val amount: Amount<Currency>): FlowLogic<SignedTransaction>() {
+class RejectTowerRentalProposalFlow(val linearId: UniqueIdentifier, val amount: Amount<Currency>): FlowLogic<SignedTransaction>() {
     @Suspendable
     override fun call(): SignedTransaction {
 
@@ -97,8 +97,8 @@ class RejectTowerRentalAgreementFlow(val linearId: UniqueIdentifier, val amount:
  * This is the flow which signs Tower settlements.
  * The signing is handled by the [SignTransactionFlow].
  */
-@InitiatedBy(RejectTowerRentalAgreementFlow::class)
-class RejectTowerRentalAgreementResponder(val flowSession: FlowSession): FlowLogic<SignedTransaction>() {
+@InitiatedBy(RejectTowerRentalProposalFlow::class)
+class ReRejectTowerRentalProposalFlowResponder(val flowSession: FlowSession): FlowLogic<SignedTransaction>() {
     @Suspendable
     override fun call(): SignedTransaction {
 
