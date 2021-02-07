@@ -42,8 +42,8 @@ class TowerRentalContract : Contract {
                 "Only one output state should be created when issuing an Tower." using (tx.outputs.size == 1)
                 val towerState = tx.outputsOfType<TowerRentalProposalState>().single()
                 "A newly issued Tower must have a positive amount." using (towerState.amount.quantity > 0)
-                "The proposer and borrower cannot have the same identity." using (towerState.agreementParty != towerState.proposerParty)
-                "Both proposer and borrower together only may sign Tower issue transaction." using
+                "The proposer and agreementParty cannot have the same identity." using (towerState.agreementParty != towerState.proposerParty)
+                "Both proposer and agreementParty together only may sign Tower issue transaction." using
                         (command.signers.toSet() == towerState.participants.map { it.owningKey }.toSet())
             }
             is Commands.AgreeTowerRentalAgreement -> requireThat {
@@ -53,7 +53,7 @@ class TowerRentalContract : Contract {
                 val output = tx.outputsOfType<TowerRentalProposalState>().single()
                 "Only the proposer property may change." using (input == output.withNewProposer(input.proposerParty))
                 "The proposer property must change in a transfer." using (input.proposerParty != output.proposerParty)
-                "The borrower, old proposer and new proposer only must sign an Tower transfer transaction" using
+                "The agreementParty, old proposer and new proposer only must sign an Tower transfer transaction" using
                         (command.signers.toSet() == (input.participants.map { it.owningKey }.toSet() `union`
                                 output.participants.map { it.owningKey }.toSet()))
             }
@@ -85,7 +85,7 @@ class TowerRentalContract : Contract {
 
                 }
                 requireThat {
-                    "Both proposer and borrower together only must sign the Tower settle transaction." using
+                    "Both proposer and agreementParty together only must sign the Tower settle transaction." using
                             (command.signers.toSet() == inputTower.participants.map { it.owningKey }.toSet())
                 }
             }

@@ -58,13 +58,13 @@ class TowerRentalProposalStateTests {
 
     /**
      * Task 3.
-     * TODO: Add a 'borrower' property of type [Party] to the [TowerRentalProposalState] class to get this test to pass.
+     * TODO: Add a 'agreementParty' property of type [Party] to the [TowerRentalProposalState] class to get this test to pass.
      */
     @Test
-    fun hasBorrowerFieldOfCorrectType() {
-        // Does the borrower field exist?
+    fun hasAgreementPartyFieldOfCorrectType() {
+        // Does the agreementParty field exist?
         TowerRentalProposalState::class.java.getDeclaredField("agreementParty")
-        // Is the borrower field of the correct type?
+        // Is the agreementParty field of the correct type?
         assertEquals(TowerRentalProposalState::class.java.getDeclaredField("agreementParty").type, Party::class.java)
     }
 
@@ -74,7 +74,7 @@ class TowerRentalProposalStateTests {
      * Hint:
      * - We would like this property to be initialised to a zero amount of Currency upon creation of the [TowerRentalProposalState].
      * - You can use the [POUNDS] extension function over [Int] to create an amount of pounds e.g. '10.POUNDS'.
-     * - This property keeps track of how much of the initial [TowerRentalProposalState.amount] has been settled by the borrower
+     * - This property keeps track of how much of the initial [TowerRentalProposalState.amount] has been settled by the agreementParty
      * - You can initialise a property with a default value in a Kotlin data class like this:
      *
      *       data class(val number: Int = 10)
@@ -104,10 +104,10 @@ class TowerRentalProposalStateTests {
 
     /**
      * Task 6.
-     * TODO: Similar to the last task, include the borrower within the [TowerRentalProposalState.participants] list
+     * TODO: Similar to the last task, include the agreementParty within the [TowerRentalProposalState.participants] list
      */
     @Test
-    fun borrowerIsParticipant() {
+    fun agreementPartyIsParticipant() {
         val towerState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party)
         assertNotEquals(towerState.participants.indexOf(BOB.party), -1)
     }
@@ -149,7 +149,7 @@ class TowerRentalProposalStateTests {
     /**
      * Task 9.
      * TODO: Ensure parameters are ordered correctly.
-     * Hint: Make sure that the proposer and borrower fields are not in the wrong order as this may cause some
+     * Hint: Make sure that the proposer and agreementParty fields are not in the wrong order as this may cause some
      * confusion in subsequent tasks!
      */
     @Test
@@ -157,13 +157,13 @@ class TowerRentalProposalStateTests {
         val fields = TowerRentalProposalState::class.java.declaredFields
         val amountIdx = fields.indexOf(TowerRentalProposalState::class.java.getDeclaredField("amount"))
         val proposerIdx = fields.indexOf(TowerRentalProposalState::class.java.getDeclaredField("proposerParty"))
-        val borrowerIdx = fields.indexOf(TowerRentalProposalState::class.java.getDeclaredField("agreementParty"))
+        val agreementPartyIdx = fields.indexOf(TowerRentalProposalState::class.java.getDeclaredField("agreementParty"))
         val paidIdx = fields.indexOf(TowerRentalProposalState::class.java.getDeclaredField("paid"))
         val linearIdIdx = fields.indexOf(TowerRentalProposalState::class.java.getDeclaredField("linearId"))
 
         assert(amountIdx < proposerIdx)
-        assert(proposerIdx < borrowerIdx)
-        assert(borrowerIdx < paidIdx)
+        assert(proposerIdx < agreementPartyIdx)
+        assert(agreementPartyIdx < paidIdx)
         assert(paidIdx < linearIdIdx)
     }
 
@@ -171,7 +171,7 @@ class TowerRentalProposalStateTests {
      * Task 10.
      * TODO: Add a helper method called [pay] that can be called from an [TowerRentalProposalState] to settle an amount of the Tower.
      * Hint:
-     * - You will need to increase the [TowerRentalProposalState.paid] property by the amount the borrower wishes to pay.
+     * - You will need to increase the [TowerRentalProposalState.paid] property by the amount the agreementParty wishes to pay.
      * - Add a new function called [pay] in [TowerRentalProposalState]. This function will need to return an [TowerRentalProposalState].
      * - The existing state is immutable so a new state must be created from the existing state. Kotlin provides a [copy]
      * method which creates a new object with new values for specified fields.

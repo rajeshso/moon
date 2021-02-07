@@ -24,7 +24,7 @@ import java.util.*
 
 /**
  * Practical exercise instructions for Contracts Part 3.
- * The objective here is to write some contract code that verifies a transaction to settle an [IOUState].
+ * The objective here is to write some contract code that verifies a transaction to settle an [TowerRentalProposalState].
  * Settling is more complicated than transferring and issuing as it requires you to use multiple state types in a
  * transaction.
  * As with the [IOUIssueTests] and [IOUTransferTests] uncomment each unit test and run them one at a time. Use the body
@@ -402,7 +402,7 @@ class RejectTowerRentalProposalTests {
 
     /**
      * Task 10.
-     * Both the proposer and the borrower must have signed an IOU issue transaction.
+     * Both the proposer and the agreementParty must have signed an IOU issue transaction.
      * TODO: Add a constraint to the contract code that ensures this is the case.
      */
     @Test
@@ -418,7 +418,7 @@ class RejectTowerRentalProposalTests {
                 command(BOB.publicKey, cashPayment.command)
                 output(TowerRentalContract.TOWER_CONTRACT_ID, iou.pay(5.DOLLARS))
                 command(listOf(ALICE.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.RejectTowerRentalAgreement())
-                failsWith("Both proposer and borrower together only must sign the Tower settle transaction.")
+                failsWith("Both proposer and agreementParty together only must sign the Tower settle transaction.")
             }
             transaction {
                 input(Cash.PROGRAM_ID, cash)
@@ -427,7 +427,7 @@ class RejectTowerRentalProposalTests {
                 command(BOB.publicKey, cashPayment.command)
                 output(TowerRentalContract.TOWER_CONTRACT_ID, iou.pay(5.DOLLARS))
                 command(BOB.publicKey, TowerRentalContract.Commands.RejectTowerRentalAgreement())
-                failsWith("Both proposer and borrower together only must sign the Tower settle transaction.")
+                failsWith("Both proposer and agreementParty together only must sign the Tower settle transaction.")
             }
             transaction {
                 input(Cash.PROGRAM_ID, cash)

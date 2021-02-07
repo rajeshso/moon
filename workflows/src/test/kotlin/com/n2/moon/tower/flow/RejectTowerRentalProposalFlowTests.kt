@@ -123,13 +123,13 @@ class RejectTowerRentalProposalFlowTests {
                     .filter { it.owner == b.info.chooseIdentityAndCert().party }
                     .sumCash()
                     .withoutIssuer()
-            // Compare the cash assigned to the proposer with the amount claimed is being settled by the borrower.
+            // Compare the cash assigned to the proposer with the amount claimed is being settled by the agreementParty.
             assertEquals(
                     outputCashSum,
                     (inputTower.amount - inputTower.paid - outputTower.paid))
             val command = ledgerTx.commands.requireSingleCommand<TowerRentalContract.Commands>()
             assert(command.value == TowerRentalContract.Commands.RejectTowerRentalAgreement())
-            // Check the transaction has been signed by the borrower.
+            // Check the transaction has been signed by the agreementParty.
             settleResult.verifySignaturesExcept(b.info.chooseIdentityAndCert().party.owningKey,
                     mockNetwork.defaultNotaryNode.info.legalIdentitiesAndCerts.first().owningKey)
         }
@@ -137,12 +137,12 @@ class RejectTowerRentalProposalFlowTests {
 
     /**
      * Task 2.
-     * Only the borrower should be running this flow for a particular Tower.
-     * TODO: Grab the Tower for the given [linearId] from the vault and check the node running the flow is the borrower.
+     * Only the agreementParty should be running this flow for a particular Tower.
+     * TODO: Grab the Tower for the given [linearId] from the vault and check the node running the flow is the agreementParty.
      * Hint: Use the data within the tower obtained from the vault to check the right node is running the flow.
      */
     @Test
-    fun settleFlowCanOnlyBeRunByBorrower() {
+    fun settleFlowCanOnlyBeRunByAgreementParty() {
         val stx = installTower(TowerRentalProposalState(10.POUNDS, b.info.chooseIdentityAndCert().party, a.info.chooseIdentityAndCert().party))
         issueCash(5.POUNDS)
         val inputTower = stx.tx.outputs.single().data as TowerRentalProposalState
@@ -154,37 +154,37 @@ class RejectTowerRentalProposalFlowTests {
 
     /**
      * Task 3.
-     * The borrower must have at least SOME cash in the right currency to pay the proposer.
-     * TODO: Add a check in the flow to ensure that the borrower has a balance of cash in the right currency.
+     * The agreementParty must have at least SOME cash in the right currency to pay the proposer.
+     * TODO: Add a check in the flow to ensure that the agreementParty has a balance of cash in the right currency.
      * Hint:
      * - Use [serviceHub.getCashBalances] - it is a map which can be queried by [Currency].
      * - Use an if statement to check there is cash in the right currency present.
      */
     @Test
-    fun borrowerMustHaveCashInRightCurrency() {
+    fun agreementPartyMustHaveCashInRightCurrency() {
         val stx = installTower(TowerRentalProposalState(10.POUNDS, b.info.chooseIdentityAndCert().party, a.info.chooseIdentityAndCert().party))
         val inputTower = stx.tx.outputs.single().data as TowerRentalProposalState
         val flow = RejectTowerRentalProposalFlow(inputTower.linearId, 5.POUNDS)
         val future = a.startFlow(flow)
         mockNetwork.runNetwork()
-        assertFailsWith<IllegalArgumentException>("Borrower has no GBP to settle.") { future.getOrThrow() }
+        assertFailsWith<IllegalArgumentException>("AgreementParty has no GBP to settle.") { future.getOrThrow() }
     }
 
     /**
      * Task 4.
-     * The borrower must have enough cash in the right currency to pay the proposer.
-     * TODO: Add a check in the flow to ensure that the borrower has enough cash to pay the proposer.
+     * The agreementParty must have enough cash in the right currency to pay the proposer.
+     * TODO: Add a check in the flow to ensure that the agreementParty has enough cash to pay the proposer.
      * Hint: Add another if statement similar to the one required above.
      */
     @Test
-    fun borrowerMustHaveEnoughCashInRightCurrency() {
+    fun agreementPartyMustHaveEnoughCashInRightCurrency() {
         val stx = installTower(TowerRentalProposalState(10.POUNDS, b.info.chooseIdentityAndCert().party, a.info.chooseIdentityAndCert().party))
         issueCash(1.POUNDS)
         val inputTower = stx.tx.outputs.single().data as TowerRentalProposalState
         val flow = RejectTowerRentalProposalFlow(inputTower.linearId, 5.POUNDS)
         val future = a.startFlow(flow)
         mockNetwork.runNetwork()
-        assertFailsWith<IllegalArgumentException>("Borrower has only 1.00 GBP but needs 5.00 GBP to settle.") { future.getOrThrow() }
+        assertFailsWith<IllegalArgumentException>("AgreementParty has only 1.00 GBP but needs 5.00 GBP to settle.") { future.getOrThrow() }
     }
 
     /**

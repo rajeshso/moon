@@ -37,9 +37,9 @@ class RejectTowerRentalProposalFlow(val linearId: UniqueIdentifier, val amount: 
         val iouToSettle = serviceHub.vaultService.queryBy<TowerRentalProposalState>(queryCriteria).states.single()
         val counterparty = iouToSettle.state.data.proposerParty
 
-        // Step 2. Check the party running this flow is the borrower.
+        // Step 2. Check the party running this flow is the agreementParty.
         if (ourIdentity != iouToSettle.state.data.agreementParty) {
-            throw IllegalArgumentException("Tower settlement flow must be initiated by the borrower.")
+            throw IllegalArgumentException("Tower settlement flow must be initiated by the agreementParty.")
         }
 
         // Step 3. Create a transaction builder.
@@ -50,9 +50,9 @@ class RejectTowerRentalProposalFlow(val linearId: UniqueIdentifier, val amount: 
         val cashBalance = serviceHub.getCashBalance(amount.token)
 
         if (cashBalance < amount) {
-            throw IllegalArgumentException("Borrower has only $cashBalance but needs $amount to settle.")
+            throw IllegalArgumentException("AgreementParty has only $cashBalance but needs $amount to settle.")
         } else if (amount > (iouToSettle.state.data.amount - iouToSettle.state.data.paid)) {
-            throw IllegalArgumentException("Borrower tried to settle with $amount but only needs ${ (iouToSettle.state.data.amount - iouToSettle.state.data.paid) }")
+            throw IllegalArgumentException("AgreementParty tried to settle with $amount but only needs ${ (iouToSettle.state.data.amount - iouToSettle.state.data.paid) }")
         }
 
         // Step 5. Get some cash from the vault and add a spend to our transaction builder.

@@ -84,8 +84,8 @@ class AgreeTowerRentalProposalFlowTests {
     @Test
     fun flowReturnsCorrectlyFormedPartiallySignedTransaction() {
         val proposer = a.info.chooseIdentityAndCert().party
-        val borrower = b.info.chooseIdentityAndCert().party
-        val stx = installTower(TowerRentalProposalState(10.POUNDS, proposer, borrower))
+        val agreementParty = b.info.chooseIdentityAndCert().party
+        val stx = installTower(TowerRentalProposalState(10.POUNDS, proposer, agreementParty))
         val inputTower = stx.tx.outputs.single().data as TowerRentalProposalState
         val flow = AgreeTowerRentalProposalFlow(inputTower.linearId, c.info.chooseIdentityAndCert().party)
         val future = a.startFlow(flow)
@@ -117,8 +117,8 @@ class AgreeTowerRentalProposalFlowTests {
     @Test
     fun flowCanOnlyBeRunByCurrentProposer() {
         val proposer = a.info.chooseIdentityAndCert().party
-        val borrower = b.info.chooseIdentityAndCert().party
-        val stx = installTower(TowerRentalProposalState(10.POUNDS, proposer, borrower))
+        val agreementParty = b.info.chooseIdentityAndCert().party
+        val stx = installTower(TowerRentalProposalState(10.POUNDS, proposer, agreementParty))
         val inputTower = stx.tx.outputs.single().data as TowerRentalProposalState
         val flow = AgreeTowerRentalProposalFlow(inputTower.linearId, c.info.chooseIdentityAndCert().party)
         val future = b.startFlow(flow)
@@ -134,8 +134,8 @@ class AgreeTowerRentalProposalFlowTests {
     @Test
     fun towerCannotBeTransferredToSameParty() {
         val proposer = a.info.chooseIdentityAndCert().party
-        val borrower = b.info.chooseIdentityAndCert().party
-        val stx = installTower(TowerRentalProposalState(10.POUNDS, proposer, borrower))
+        val agreementParty = b.info.chooseIdentityAndCert().party
+        val stx = installTower(TowerRentalProposalState(10.POUNDS, proposer, agreementParty))
         val inputTower = stx.tx.outputs.single().data as TowerRentalProposalState
         val flow = AgreeTowerRentalProposalFlow(inputTower.linearId, proposer)
         val future = a.startFlow(flow)
@@ -146,15 +146,15 @@ class AgreeTowerRentalProposalFlowTests {
 
     /**
      * Task 4.
-     * Get the borrowers and the new proposers signatures.
+     * Get the agreementPartys and the new proposers signatures.
      * TODO: Amend the [ProposeTowerRentalAgreement] to handle collecting signatures from multiple parties.
      * Hint: use [initiateFlow] and the [CollectSignaturesFlow] in the same way you did for the [IntallTowerFlow].
      */
     @Test
     fun flowReturnsTransactionSignedByAllParties() {
         val proposer = a.info.chooseIdentityAndCert().party
-        val borrower = b.info.chooseIdentityAndCert().party
-        val stx = installTower(TowerRentalProposalState(10.POUNDS, proposer, borrower))
+        val agreementParty = b.info.chooseIdentityAndCert().party
+        val stx = installTower(TowerRentalProposalState(10.POUNDS, proposer, agreementParty))
         val inputTower = stx.tx.outputs.single().data as TowerRentalProposalState
         val flow = AgreeTowerRentalProposalFlow(inputTower.linearId, c.info.chooseIdentityAndCert().party)
         val future = a.startFlow(flow)
@@ -170,8 +170,8 @@ class AgreeTowerRentalProposalFlowTests {
     @Test
     fun flowReturnsTransactionSignedByAllPartiesAndNotary() {
         val proposer = a.info.chooseIdentityAndCert().party
-        val borrower = b.info.chooseIdentityAndCert().party
-        val stx = installTower(TowerRentalProposalState(10.POUNDS, proposer, borrower))
+        val agreementParty = b.info.chooseIdentityAndCert().party
+        val stx = installTower(TowerRentalProposalState(10.POUNDS, proposer, agreementParty))
         val inputTower = stx.tx.outputs.single().data as TowerRentalProposalState
         val flow = AgreeTowerRentalProposalFlow(inputTower.linearId, c.info.chooseIdentityAndCert().party)
         val future = a.startFlow(flow)

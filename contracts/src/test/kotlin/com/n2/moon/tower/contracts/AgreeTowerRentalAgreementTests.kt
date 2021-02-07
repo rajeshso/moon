@@ -17,7 +17,7 @@ import org.junit.Test
 
 /**
  * Practical exercise instructions for Contracts Part 2.
- * The objective here is to write some contract code that verifies a transaction to issue an [IOUState].
+ * The objective here is to write some contract code that verifies a transaction to issue an [TowerRentalProposalState].
  * As with the [IOUIssueTests] uncomment each unit test and run them one at a time. Use the body of the tests and the
  * task description to determine how to get the tests to pass.
  */
@@ -206,31 +206,31 @@ class  AgreeTowerRentalAgreementTests {
                 input(TowerRentalContract::class.java.name, iou)
                 output(TowerRentalContract::class.java.name, iou.withNewProposer(CHARLIE.party))
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
-                this `fails with` "The borrower, old proposer and new proposer only must sign an Tower transfer transaction"
+                this `fails with` "The agreementParty, old proposer and new proposer only must sign an Tower transfer transaction"
             }
             transaction {
                 input(TowerRentalContract::class.java.name, iou)
                 output(TowerRentalContract::class.java.name, iou.withNewProposer(CHARLIE.party))
                 command(listOf(ALICE.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
-                this `fails with` "The borrower, old proposer and new proposer only must sign an Tower transfer transaction"
+                this `fails with` "The agreementParty, old proposer and new proposer only must sign an Tower transfer transaction"
             }
             transaction {
                 input(TowerRentalContract::class.java.name, iou)
                 output(TowerRentalContract::class.java.name, iou.withNewProposer(CHARLIE.party))
                 command(listOf(BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
-                this `fails with` "The borrower, old proposer and new proposer only must sign an Tower transfer transaction"
+                this `fails with` "The agreementParty, old proposer and new proposer only must sign an Tower transfer transaction"
             }
             transaction {
                 input(TowerRentalContract::class.java.name, iou)
                 output(TowerRentalContract::class.java.name, iou.withNewProposer(CHARLIE.party))
                 command(listOf(ALICE.publicKey, BOB.publicKey, MINICORP.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
-                this `fails with` "The borrower, old proposer and new proposer only must sign an Tower transfer transaction"
+                this `fails with` "The agreementParty, old proposer and new proposer only must sign an Tower transfer transaction"
             }
             transaction {
                 input(TowerRentalContract::class.java.name, iou)
                 output(TowerRentalContract::class.java.name, iou.withNewProposer(CHARLIE.party))
                 command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey, MINICORP.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
-                this `fails with` "The borrower, old proposer and new proposer only must sign an Tower transfer transaction"
+                this `fails with` "The agreementParty, old proposer and new proposer only must sign an Tower transfer transaction"
             }
             transaction {
                 input(TowerRentalContract::class.java.name, iou)

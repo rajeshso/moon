@@ -74,8 +74,8 @@ class InitiateTowerRentalProposalFlowTests {
     @Test
     fun flowReturnsCorrectlyFormedPartiallySignedTransaction() {
         val proposer = a.info.chooseIdentityAndCert().party
-        val borrower = b.info.chooseIdentityAndCert().party
-        val towerState = TowerRentalProposalState(10.POUNDS, proposer, borrower)
+        val agreementParty = b.info.chooseIdentityAndCert().party
+        val towerState = TowerRentalProposalState(10.POUNDS, proposer, agreementParty)
         val flow = InitiateTowerRentalProposalFlow(towerState)
         val future = a.startFlow(flow)
         mockNetwork.runNetwork()
@@ -91,7 +91,7 @@ class InitiateTowerRentalProposalFlowTests {
         assert(command.value is TowerRentalContract.Commands.ProposeTowerRentalAgreement)
         assert(command.signers.toSet() == towerState.participants.map { it.owningKey }.toSet())
         ptx.verifySignaturesExcept(
-            borrower.owningKey,
+            agreementParty.owningKey,
             mockNetwork.defaultNotaryNode.info.legalIdentitiesAndCerts.first().owningKey
         )
     }
@@ -107,18 +107,18 @@ class InitiateTowerRentalProposalFlowTests {
     fun flowReturnsVerifiedPartiallySignedTransaction() {
         // Check that a zero amount TowerState fails.
         val proposer = a.info.chooseIdentityAndCert().party
-        val borrower = b.info.chooseIdentityAndCert().party
-        val zeroTower = TowerRentalProposalState(0.POUNDS, proposer, borrower)
+        val agreementParty = b.info.chooseIdentityAndCert().party
+        val zeroTower = TowerRentalProposalState(0.POUNDS, proposer, agreementParty)
         val futureOne = a.startFlow(InitiateTowerRentalProposalFlow(zeroTower))
         mockNetwork.runNetwork()
         assertFailsWith<TransactionVerificationException> { futureOne.getOrThrow() }
         // Check that an TowerState with the same participants fails.
-        val borrowerIsProposerTower = TowerRentalProposalState(10.POUNDS, proposer, proposer)
-        val futureTwo = a.startFlow(InitiateTowerRentalProposalFlow(borrowerIsProposerTower))
+        val agreementPartyIsProposerTower = TowerRentalProposalState(10.POUNDS, proposer, proposer)
+        val futureTwo = a.startFlow(InitiateTowerRentalProposalFlow(agreementPartyIsProposerTower))
         mockNetwork.runNetwork()
         assertFailsWith<TransactionVerificationException> { futureTwo.getOrThrow() }
         // Check a good TowerState passes.
-        val towerState = TowerRentalProposalState(10.POUNDS, proposer, borrower)
+        val towerState = TowerRentalProposalState(10.POUNDS, proposer, agreementParty)
         val futureThree = a.startFlow(InitiateTowerRentalProposalFlow(towerState))
         mockNetwork.runNetwork()
         futureThree.getOrThrow()
@@ -135,7 +135,7 @@ class InitiateTowerRentalProposalFlowTests {
      * - - [ourIdentity] will give you the identity of the node you are operating as
      * - Use [initiateFlow] to get a set of [FlowSession] objects
      * - - Using [state.participants] as a base to determine the sessions needed is recommended. [participants] is on
-     * - - the state interface so it is guaranteed to exist where [proposer] and [borrower] are not.
+     * - - the state interface so it is guaranteed to exist where [proposer] and [agreementParty] are not.
      * - - Hint: [ourIdentity] will give you the [Party] that represents the identity of the initiating flow.
      * - Use [subFlow] to start the [CollectSignaturesFlow]
      * - Pass it a [SignedTransaction] object and [FlowSession] set
@@ -152,8 +152,8 @@ class InitiateTowerRentalProposalFlowTests {
     @Test
     fun flowReturnsTransactionSignedByBothParties() {
         val proposer = a.info.chooseIdentityAndCert().party
-        val borrower = b.info.chooseIdentityAndCert().party
-        val towerState = TowerRentalProposalState(10.POUNDS, proposer, borrower)
+        val agreementParty = b.info.chooseIdentityAndCert().party
+        val towerState = TowerRentalProposalState(10.POUNDS, proposer, agreementParty)
         val flow = InitiateTowerRentalProposalFlow(towerState)
         val future = a.startFlow(flow)
         mockNetwork.runNetwork()
@@ -176,8 +176,8 @@ class InitiateTowerRentalProposalFlowTests {
     @Test
     fun flowRecordsTheSameTransactionInBothPartyVaults() {
         val proposer = a.info.chooseIdentityAndCert().party
-        val borrower = b.info.chooseIdentityAndCert().party
-        val towerState = TowerRentalProposalState(10.POUNDS, proposer, borrower)
+        val agreementParty = b.info.chooseIdentityAndCert().party
+        val towerState = TowerRentalProposalState(10.POUNDS, proposer, agreementParty)
         val flow = InitiateTowerRentalProposalFlow(towerState)
         val future = a.startFlow(flow)
         mockNetwork.runNetwork()

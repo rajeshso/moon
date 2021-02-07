@@ -9,7 +9,7 @@ import net.corda.core.identity.Party
 import java.util.*
 
 /**
- * This is where you'll add the definition of your state object. Look at the unit tests in [TowerStateTests] for
+ * This is where you'll add the definition of your state object. Look at the unit tests in [TowerRentalProposalState] for
  * instructions on how to complete the [TowerRentalProposalState] class.
  *
  * Remove the "val data: String = "data" property before starting the [TowerRentalProposalState] tasks.
@@ -22,7 +22,7 @@ data class TowerRentalProposalState(val amount: Amount<Currency>,
                                     override val linearId: UniqueIdentifier = UniqueIdentifier()): LinearState {
     /**
      *  This property holds a list of the nodes which can "use" this state in a valid transaction. In this case, the
-     *  proposer or the borrower.
+     *  proposer or the agreementParty.
      */
     override val participants: List<Party> get() = listOf(proposerParty, agreementParty)
 

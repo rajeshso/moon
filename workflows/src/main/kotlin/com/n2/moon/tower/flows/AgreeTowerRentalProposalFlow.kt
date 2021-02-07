@@ -69,7 +69,7 @@ class AgreeTowerRentalProposalFlow(val linearId: UniqueIdentifier,
         builder.verify(serviceHub)
         val ptx = serviceHub.signInitialTransaction(builder)
 
-        // Stage 8. Collect signature from borrower and the new proposer and add it to the transaction.
+        // Stage 8. Collect signature from agreementParty and the new proposer and add it to the transaction.
         // This also verifies the transaction and checks the signatures.
         val sessions = (inputIou.participants - ourIdentity + newProposer).map { initiateFlow(it) }.toSet()
         val stx = subFlow(CollectSignaturesFlow(ptx, sessions))
