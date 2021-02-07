@@ -51,8 +51,8 @@ class RejectTowerRentalProposalFlow(val linearId: UniqueIdentifier, val amount: 
 
         if (cashBalance < amount) {
             throw IllegalArgumentException("AgreementParty has only $cashBalance but needs $amount to settle.")
-        } else if (amount > (iouToSettle.state.data.amount - iouToSettle.state.data.paid)) {
-            throw IllegalArgumentException("AgreementParty tried to settle with $amount but only needs ${ (iouToSettle.state.data.amount - iouToSettle.state.data.paid) }")
+        } else if (amount > (iouToSettle.state.data.rentalAmount - iouToSettle.state.data.paid)) {
+            throw IllegalArgumentException("AgreementParty tried to settle with $amount but only needs ${ (iouToSettle.state.data.rentalAmount - iouToSettle.state.data.paid) }")
         }
 
         // Step 5. Get some cash from the vault and add a spend to our transaction builder.
@@ -67,7 +67,7 @@ class RejectTowerRentalProposalFlow(val linearId: UniqueIdentifier, val amount: 
         builder.addInputState(iouToSettle)
 
         // Step 7. Only add an output Tower state of the Tower has not been fully settled.
-        val amountRemaining = iouToSettle.state.data.amount - iouToSettle.state.data.paid - amount
+        val amountRemaining = iouToSettle.state.data.rentalAmount - iouToSettle.state.data.paid - amount
         if (amountRemaining > Amount(0, amount.token)) {
             val settledTower: TowerRentalProposalState = iouToSettle.state.data.pay(amount)
             builder.addOutputState(settledTower, TowerRentalContract.TOWER_CONTRACT_ID)

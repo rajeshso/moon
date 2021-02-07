@@ -15,10 +15,10 @@ import java.util.*
  * Remove the "val data: String = "data" property before starting the [TowerRentalProposalState] tasks.
  */
 @BelongsToContract(TowerRentalContract::class)
-data class TowerRentalProposalState(val amount: Amount<Currency>,
+data class TowerRentalProposalState(val rentalAmount: Amount<Currency>,
                                     val proposerParty: Party,
                                     val agreementParty: Party,
-                                    val paid: Amount<Currency> = Amount(0, amount.token),
+                                    val paid: Amount<Currency> = Amount(0, rentalAmount.token),
                                     override val linearId: UniqueIdentifier = UniqueIdentifier()): LinearState {
     /**
      *  This property holds a list of the nodes which can "use" this state in a valid transaction. In this case, the

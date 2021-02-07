@@ -126,7 +126,7 @@ class RejectTowerRentalProposalFlowTests {
             // Compare the cash assigned to the proposer with the amount claimed is being settled by the agreementParty.
             assertEquals(
                     outputCashSum,
-                    (inputTower.amount - inputTower.paid - outputTower.paid))
+                    (inputTower.rentalAmount - inputTower.paid - outputTower.paid))
             val command = ledgerTx.commands.requireSingleCommand<TowerRentalContract.Commands>()
             assert(command.value == TowerRentalContract.Commands.RejectTowerRentalAgreement())
             // Check the transaction has been signed by the agreementParty.

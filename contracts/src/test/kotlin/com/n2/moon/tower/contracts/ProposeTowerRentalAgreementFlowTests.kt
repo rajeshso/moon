@@ -147,8 +147,8 @@ class ProposeTowerRentalAgreementFlowTests {
      *
      *       val state = tx.outputsOfType<X>().single()
      *
-     * - When checking the [TowerRentalProposalState.amount] property is greater than zero, you need to check the
-     *   [TowerRentalProposalState.amount.quantity] field.
+     * - When checking the [TowerRentalProposalState.rentalAmount] property is greater than zero, you need to check the
+     *   [TowerRentalProposalState.rentalAmount.quantity] field.
      */
     @Test
     fun cannotCreateZeroValueTowers() {

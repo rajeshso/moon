@@ -39,9 +39,9 @@ class TowerRentalProposalStateTests {
     @Test
     fun hasTowerAmountFieldOfCorrectType() {
         // Does the amount field exist?
-        TowerRentalProposalState::class.java.getDeclaredField("amount")
+        TowerRentalProposalState::class.java.getDeclaredField("rentalAmount")
         // Is the amount field of the correct type?
-        assertEquals(TowerRentalProposalState::class.java.getDeclaredField("amount").type, Amount::class.java)
+        assertEquals(TowerRentalProposalState::class.java.getDeclaredField("rentalAmount").type, Amount::class.java)
     }
 
     /**
@@ -74,14 +74,14 @@ class TowerRentalProposalStateTests {
      * Hint:
      * - We would like this property to be initialised to a zero amount of Currency upon creation of the [TowerRentalProposalState].
      * - You can use the [POUNDS] extension function over [Int] to create an amount of pounds e.g. '10.POUNDS'.
-     * - This property keeps track of how much of the initial [TowerRentalProposalState.amount] has been settled by the agreementParty
+     * - This property keeps track of how much of the initial [TowerRentalProposalState.rentalAmount] has been settled by the agreementParty
      * - You can initialise a property with a default value in a Kotlin data class like this:
      *
      *       data class(val number: Int = 10)
      *
      * - We need to make sure that the [TowerRentalProposalState.paid] property is of the same currency type as the
-     *   [TowerRentalProposalState.amount] property. You can create an instance of the [Amount] class that takes a zero value and a token
-     *   representing the currency - which should be the same currency as the [TowerRentalProposalState.amount] property.
+     *   [TowerRentalProposalState.rentalAmount] property. You can create an instance of the [Amount] class that takes a zero value and a token
+     *   representing the currency - which should be the same currency as the [TowerRentalProposalState.rentalAmount] property.
      */
     @Test
     fun hasPaidFieldOfCorrectType() {
@@ -155,7 +155,7 @@ class TowerRentalProposalStateTests {
     @Test
     fun checkTowerStateParameterOrdering() {
         val fields = TowerRentalProposalState::class.java.declaredFields
-        val amountIdx = fields.indexOf(TowerRentalProposalState::class.java.getDeclaredField("amount"))
+        val amountIdx = fields.indexOf(TowerRentalProposalState::class.java.getDeclaredField("rentalAmount"))
         val proposerIdx = fields.indexOf(TowerRentalProposalState::class.java.getDeclaredField("proposerParty"))
         val agreementPartyIdx = fields.indexOf(TowerRentalProposalState::class.java.getDeclaredField("agreementParty"))
         val paidIdx = fields.indexOf(TowerRentalProposalState::class.java.getDeclaredField("paid"))

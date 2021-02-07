@@ -41,7 +41,7 @@ class TowerRentalContract : Contract {
                 "No inputs should be consumed when issuing an Tower." using (tx.inputs.isEmpty())
                 "Only one output state should be created when issuing an Tower." using (tx.outputs.size == 1)
                 val towerState = tx.outputsOfType<TowerRentalProposalState>().single()
-                "A newly issued Tower must have a positive amount." using (towerState.amount.quantity > 0)
+                "A newly issued Tower must have a positive amount." using (towerState.rentalAmount.quantity > 0)
                 "The proposer and agreementParty cannot have the same identity." using (towerState.agreementParty != towerState.proposerParty)
                 "Both proposer and agreementParty together only may sign Tower issue transaction." using
                         (command.signers.toSet() == towerState.participants.map { it.owningKey }.toSet())
@@ -70,7 +70,7 @@ class TowerRentalContract : Contract {
                 requireThat { "Output cash must be paid to the proposer." using (acceptableCash.isNotEmpty()) }
                 // Sum the cash being sent to us (we don't care about the issuer).
                 val sumAcceptableCash = acceptableCash.sumCash().withoutIssuer()
-                val amountOutstanding = inputTower.amount - inputTower.paid
+                val amountOutstanding = inputTower.rentalAmount - inputTower.paid
                 requireThat { "The amount settled cannot be more than the amount outstanding." using (amountOutstanding >= sumAcceptableCash) }
                 // Check to see if we need an output Tower or not.
                 if (amountOutstanding == sumAcceptableCash) {
