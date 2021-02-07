@@ -41,9 +41,9 @@ class TowerRentalContract : Contract {
                 "No inputs should be consumed when issuing an Tower." using (tx.inputs.isEmpty())
                 "Only one output state should be created when issuing an Tower." using (tx.outputs.size == 1)
                 val towerState = tx.outputsOfType<TowerRentalProposalState>().single()
-                "A newly issued Tower must have a positive amount." using (towerState.rentalAmount.quantity > 0)
+                "A newly issued Tower must have a positive rental amount." using (towerState.rentalAmount.quantity > 0)
                 "The proposer and agreementParty cannot have the same identity." using (towerState.agreementParty != towerState.proposerParty)
-                "Both proposer and agreementParty together only may sign Tower issue transaction." using
+                "Both proposer and agreementParty together only may sign Tower Rental Proposal transaction." using
                         (command.signers.toSet() == towerState.participants.map { it.owningKey }.toSet())
             }
             is Commands.AgreeTowerRentalAgreement -> requireThat {

@@ -156,7 +156,7 @@ class ProposeTowerRentalAgreementFlowTests {
             transaction {
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.ProposeTowerRentalAgreement())
                 output(TowerRentalContract.TOWER_CONTRACT_ID, TowerRentalProposalState(0.POUNDS, ALICE.party, BOB.party)) // Zero amount fails.
-                this `fails with` "A newly issued Tower must have a positive amount."
+                this `fails with` "A newly issued Tower must have a positive rental amount."
             }
             transaction {
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.ProposeTowerRentalAgreement())
@@ -228,27 +228,27 @@ class ProposeTowerRentalAgreementFlowTests {
             transaction {
                 command(DUMMY.publicKey, TowerRentalContract.Commands.ProposeTowerRentalAgreement())
                 output(TowerRentalContract.TOWER_CONTRACT_ID, towerState)
-                this `fails with` "Both proposer and agreementParty together only may sign Tower issue transaction."
+                this `fails with` "Both proposer and agreementParty together only may sign Tower Rental Proposal transaction."
             }
             transaction {
                 command(ALICE.publicKey, TowerRentalContract.Commands.ProposeTowerRentalAgreement())
                 output(TowerRentalContract.TOWER_CONTRACT_ID, towerState)
-                this `fails with` "Both proposer and agreementParty together only may sign Tower issue transaction."
+                this `fails with` "Both proposer and agreementParty together only may sign Tower Rental Proposal transaction."
             }
             transaction {
                 command(BOB.publicKey, TowerRentalContract.Commands.ProposeTowerRentalAgreement())
                 output(TowerRentalContract.TOWER_CONTRACT_ID, towerState)
-                this `fails with` "Both proposer and agreementParty together only may sign Tower issue transaction."
+                this `fails with` "Both proposer and agreementParty together only may sign Tower Rental Proposal transaction."
             }
             transaction {
                 command(listOf(BOB.publicKey, BOB.publicKey, BOB.publicKey), TowerRentalContract.Commands.ProposeTowerRentalAgreement())
                 output(TowerRentalContract.TOWER_CONTRACT_ID, towerState)
-                this `fails with` "Both proposer and agreementParty together only may sign Tower issue transaction."
+                this `fails with` "Both proposer and agreementParty together only may sign Tower Rental Proposal transaction."
             }
             transaction {
                 command(listOf(BOB.publicKey, BOB.publicKey, MINICORP.publicKey, ALICE.publicKey), TowerRentalContract.Commands.ProposeTowerRentalAgreement())
                 output(TowerRentalContract.TOWER_CONTRACT_ID, towerState)
-                this `fails with` "Both proposer and agreementParty together only may sign Tower issue transaction."
+                this `fails with` "Both proposer and agreementParty together only may sign Tower Rental Proposal transaction."
             }
             transaction {
                 command(listOf(BOB.publicKey, BOB.publicKey, BOB.publicKey, ALICE.publicKey), TowerRentalContract.Commands.ProposeTowerRentalAgreement())
