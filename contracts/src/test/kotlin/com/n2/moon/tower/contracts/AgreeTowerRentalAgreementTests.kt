@@ -1,6 +1,6 @@
 package com.n2.moon.tower.contracts
 
-import com.n2.moon.tower.states.TowerState
+import com.n2.moon.tower.states.TowerRentalProposalState
 import net.corda.core.contracts.*
 import net.corda.core.identity.AbstractParty
 import net.corda.core.internal.packageName
@@ -62,7 +62,7 @@ class  AgreeTowerRentalAgreementTests {
      */
     @Test
     fun mustHandleMultipleCommandValues() {
-        val iou = TowerState(10.POUNDS, ALICE.party, BOB.party)
+        val iou = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party)
         ledgerServices.ledger {
             transaction {
                 output(TowerRentalContract::class.java.name, iou)
@@ -92,7 +92,7 @@ class  AgreeTowerRentalAgreementTests {
      */
     @Test
     fun mustHaveOneInputAndOneOutput() {
-        val iou = TowerState(10.POUNDS, ALICE.party, BOB.party)
+        val iou = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party)
         ledgerServices.ledger {
             transaction {
                 input(TowerRentalContract::class.java.name, iou)
@@ -131,32 +131,32 @@ class  AgreeTowerRentalAgreementTests {
      * Task 3.
      * TODO: Add a constraint to the contract code to ensure only the lender property can change when transferring IOUs.
      * Hint:
-     * - You can use the [TowerState.copy] method.
+     * - You can use the [TowerRentalProposalState.copy] method.
      * - You can compare a copy of the input to the output with the lender of the output as the lender of the input.
      * - You'll need references to the input and output ious.
-     * - Remember you need to cast the [ContractState]s to [TowerState]s.
+     * - Remember you need to cast the [ContractState]s to [TowerRentalProposalState]s.
      * - It's easier to take this approach then check all properties other than the lender haven't changed, including
      *   the [linearId] and the [contract]!
      */
     @Test
     fun onlyTheLenderMayChange() {
-        val iou = TowerState(10.POUNDS, ALICE.party, BOB.party)
+        val iou = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party)
         ledgerServices.ledger {
             transaction {
-                input(TowerRentalContract::class.java.name, TowerState(10.DOLLARS, ALICE.party, BOB.party))
-                output(TowerRentalContract::class.java.name, TowerState(1.DOLLARS, ALICE.party, BOB.party))
+                input(TowerRentalContract::class.java.name, TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party))
+                output(TowerRentalContract::class.java.name, TowerRentalProposalState(1.DOLLARS, ALICE.party, BOB.party))
                 command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
                 this `fails with` "Only the lender property may change."
             }
             transaction {
-                input(TowerRentalContract::class.java.name, TowerState(10.DOLLARS, ALICE.party, BOB.party))
-                output(TowerRentalContract::class.java.name, TowerState(10.DOLLARS, ALICE.party, CHARLIE.party))
+                input(TowerRentalContract::class.java.name, TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party))
+                output(TowerRentalContract::class.java.name, TowerRentalProposalState(10.DOLLARS, ALICE.party, CHARLIE.party))
                 command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
                 this `fails with` "Only the lender property may change."
             }
             transaction {
-                input(TowerRentalContract::class.java.name, TowerState(10.DOLLARS, ALICE.party, BOB.party, 5.DOLLARS))
-                output(TowerRentalContract::class.java.name, TowerState(10.DOLLARS, ALICE.party, BOB.party, 10.DOLLARS))
+                input(TowerRentalContract::class.java.name, TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party, 5.DOLLARS))
+                output(TowerRentalContract::class.java.name, TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party, 10.DOLLARS))
                 command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
                 this `fails with` "Only the lender property may change."
             }
@@ -176,7 +176,7 @@ class  AgreeTowerRentalAgreementTests {
      */
     @Test
     fun theLenderMustChange() {
-        val iou = TowerState(10.POUNDS, ALICE.party, BOB.party)
+        val iou = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party)
         ledgerServices.ledger {
             transaction {
                 input(TowerRentalContract::class.java.name, iou)
@@ -200,7 +200,7 @@ class  AgreeTowerRentalAgreementTests {
      */
     @Test
     fun allParticipantsMustSign() {
-        val iou = TowerState(10.POUNDS, ALICE.party, BOB.party)
+        val iou = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party)
         ledgerServices.ledger {
             transaction {
                 input(TowerRentalContract::class.java.name, iou)

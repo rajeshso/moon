@@ -1,6 +1,6 @@
 package com.n2.moon.tower.contracts
 
-import com.n2.moon.tower.states.TowerState
+import com.n2.moon.tower.states.TowerRentalProposalState
 import net.corda.core.contracts.*
 import net.corda.finance.DOLLARS
 import net.corda.finance.POUNDS
@@ -16,7 +16,7 @@ import org.junit.Test
 
 /**
  * Practical exercise instructions for Contracts Part 1.
- * The objective here is to write some contract code that verifies a transaction to issue an [TowerState].
+ * The objective here is to write some contract code that verifies a transaction to issue an [TowerRentalProposalState].
  * As with the [TowerStateTests] uncomment each unit test and run them one at a time. Use the body of the tests and the
  * task description to determine how to get the tests to pass.
  */
@@ -54,7 +54,7 @@ class ProposeTowerRentalAgreementFlowTests {
      */
     @Test
     fun mustIncludeIssueCommand() {
-        val towerState = TowerState(1.POUNDS, ALICE.party, BOB.party)
+        val towerState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party)
         ledgerServices.ledger {
             transaction {
                 output(TowerRentalContract.TOWER_CONTRACT_ID,  towerState)
@@ -89,7 +89,7 @@ class ProposeTowerRentalAgreementFlowTests {
      */
     //@Disabled
     fun issueTransactionMustHaveNoInputs() {
-        val towerState = TowerState(1.POUNDS, ALICE.party, BOB.party)
+        val towerState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party)
         ledgerServices.ledger {
             transaction {
                 input(TowerRentalContract.TOWER_CONTRACT_ID, DummyState())
@@ -107,14 +107,14 @@ class ProposeTowerRentalAgreementFlowTests {
 
     /**
      * Task 3.
-     * Now we need to ensure that only one [TowerState] is issued per transaction.
+     * Now we need to ensure that only one [TowerRentalProposalState] is issued per transaction.
      * TODO: Write a contract constraint that ensures only one output state is created in a transaction.
      * Hint: Write an additional constraint within the existing [requireThat] block which you created in the previous
      * task.
      */
     @Test
     fun issueTransactionMustHaveOneOutput() {
-        val towerState = TowerState(1.POUNDS, ALICE.party, BOB.party)
+        val towerState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party)
         ledgerServices.ledger {
             transaction {
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.ProposeTowerRentalAgreement())
@@ -132,7 +132,7 @@ class ProposeTowerRentalAgreementFlowTests {
 
     /**
      * Task 4.
-     * Now we need to consider the properties of the [TowerState]. We need to ensure that an Tower should always have a
+     * Now we need to consider the properties of the [TowerRentalProposalState]. We need to ensure that an Tower should always have a
      * positive value.
      * TODO: Write a contract constraint that ensures newly issued Towers always have a positive value.
      * Hint: You will need a number of hints to complete this task!
@@ -142,35 +142,35 @@ class ProposeTowerRentalAgreementFlowTests {
      *   only one element in the previous task.
      * - We need to obtain a reference to the proposed Tower for issuance from the [LedgerTransaction.outputs] list.
      *   This list is typed as a list of [ContractState]s, therefore we need to cast the [ContractState] which we return
-     *   from [single] to an [TowerState]. [BaseTransaction.outputsOfType] is a helper function that finds states
+     *   from [single] to an [TowerRentalProposalState]. [BaseTransaction.outputsOfType] is a helper function that finds states
      *   of a specific type and casts the results to that type.
      *
      *       val state = tx.outputsOfType<X>().single()
      *
-     * - When checking the [TowerState.amount] property is greater than zero, you need to check the
-     *   [TowerState.amount.quantity] field.
+     * - When checking the [TowerRentalProposalState.amount] property is greater than zero, you need to check the
+     *   [TowerRentalProposalState.amount.quantity] field.
      */
     @Test
     fun cannotCreateZeroValueTowers() {
         ledgerServices.ledger {
             transaction {
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.ProposeTowerRentalAgreement())
-                output(TowerRentalContract.TOWER_CONTRACT_ID, TowerState(0.POUNDS, ALICE.party, BOB.party)) // Zero amount fails.
+                output(TowerRentalContract.TOWER_CONTRACT_ID, TowerRentalProposalState(0.POUNDS, ALICE.party, BOB.party)) // Zero amount fails.
                 this `fails with` "A newly issued Tower must have a positive amount."
             }
             transaction {
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.ProposeTowerRentalAgreement())
-                output(TowerRentalContract.TOWER_CONTRACT_ID, TowerState(100.SWISS_FRANCS, ALICE.party, BOB.party))
+                output(TowerRentalContract.TOWER_CONTRACT_ID, TowerRentalProposalState(100.SWISS_FRANCS, ALICE.party, BOB.party))
                 this.verifies()
             }
             transaction {
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.ProposeTowerRentalAgreement())
-                output(TowerRentalContract.TOWER_CONTRACT_ID, TowerState(1.POUNDS, ALICE.party, BOB.party))
+                output(TowerRentalContract.TOWER_CONTRACT_ID, TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party))
                 this.verifies()
             }
             transaction {
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.ProposeTowerRentalAgreement())
-                output(TowerRentalContract.TOWER_CONTRACT_ID, TowerState(10.DOLLARS, ALICE.party, BOB.party))
+                output(TowerRentalContract.TOWER_CONTRACT_ID, TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party))
                 this.verifies()
             }
         }
@@ -181,13 +181,13 @@ class ProposeTowerRentalAgreementFlowTests {
      * For obvious reasons, the identity of the lender and borrower must be different.
      * TODO: Add a contract constraint to check the lender is not the borrower.
      * Hint:
-     * - You can use the [TowerState.lender] and [TowerState.borrower] properties.
+     * - You can use the [TowerRentalProposalState.lender] and [TowerRentalProposalState.borrower] properties.
      * - This check must be made before the checking who has signed.
      */
     @Test
     fun lenderAndBorrowerCannotBeTheSame() {
-        val towerState = TowerState(1.POUNDS, ALICE.party, BOB.party)
-        val borrowerIsLenderIou = TowerState(10.POUNDS, ALICE.party, ALICE.party)
+        val towerState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party)
+        val borrowerIsLenderIou = TowerRentalProposalState(10.POUNDS, ALICE.party, ALICE.party)
         ledgerServices.ledger {
             transaction {
                 command(listOf(ALICE.publicKey, BOB.publicKey),TowerRentalContract.Commands.ProposeTowerRentalAgreement())
@@ -204,10 +204,10 @@ class ProposeTowerRentalAgreementFlowTests {
 
     /**
      * Task 6.
-     * The list of public keys which the commands hold should contain all of the participants defined in the [TowerState].
+     * The list of public keys which the commands hold should contain all of the participants defined in the [TowerRentalProposalState].
      * This is because the Tower is a bilateral agreement where both parties involved are required to sign to issue an
      * Tower or change the properties of an existing Tower.
-     * TODO: Add a contract constraint to check that all the required signers are [TowerState] participants.
+     * TODO: Add a contract constraint to check that all the required signers are [TowerRentalProposalState] participants.
      * Hint:
      * - In Kotlin you can perform a set equality check of two sets with the == operator.
      * - We need to check that the signers for the transaction are a subset of the participants list.
@@ -223,7 +223,7 @@ class ProposeTowerRentalAgreementFlowTests {
      */
     @Test
     fun lenderAndBorrowerMustSignIssueTransaction() {
-        val towerState = TowerState(1.POUNDS, ALICE.party, BOB.party)
+        val towerState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party)
         ledgerServices.ledger {
             transaction {
                 command(DUMMY.publicKey, TowerRentalContract.Commands.ProposeTowerRentalAgreement())

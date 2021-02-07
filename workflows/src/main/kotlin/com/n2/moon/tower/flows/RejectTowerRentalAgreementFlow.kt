@@ -3,7 +3,7 @@ package com.n2.moon.tower.flows
 
 import co.paralleluniverse.fibers.Suspendable
 import com.n2.moon.tower.contracts.TowerRentalContract
-import com.n2.moon.tower.states.TowerState
+import com.n2.moon.tower.states.TowerRentalProposalState
 import net.corda.confidential.IdentitySyncFlow
 import net.corda.core.contracts.Amount
 import net.corda.core.contracts.Command
@@ -34,7 +34,7 @@ class RejectTowerRentalAgreementFlow(val linearId: UniqueIdentifier, val amount:
 
         // Step 1. Retrieve the Tower state from the vault.
         val queryCriteria = QueryCriteria.LinearStateQueryCriteria(linearId = listOf(linearId))
-        val iouToSettle = serviceHub.vaultService.queryBy<TowerState>(queryCriteria).states.single()
+        val iouToSettle = serviceHub.vaultService.queryBy<TowerRentalProposalState>(queryCriteria).states.single()
         val counterparty = iouToSettle.state.data.lender
 
         // Step 2. Check the party running this flow is the borrower.
@@ -69,7 +69,7 @@ class RejectTowerRentalAgreementFlow(val linearId: UniqueIdentifier, val amount:
         // Step 7. Only add an output Tower state of the Tower has not been fully settled.
         val amountRemaining = iouToSettle.state.data.amount - iouToSettle.state.data.paid - amount
         if (amountRemaining > Amount(0, amount.token)) {
-            val settledTower: TowerState = iouToSettle.state.data.pay(amount)
+            val settledTower: TowerRentalProposalState = iouToSettle.state.data.pay(amount)
             builder.addOutputState(settledTower, TowerRentalContract.TOWER_CONTRACT_ID)
         }
 

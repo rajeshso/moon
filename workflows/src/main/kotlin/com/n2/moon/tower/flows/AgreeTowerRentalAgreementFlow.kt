@@ -3,7 +3,7 @@ package com.n2.moon.tower.flows
 
 import co.paralleluniverse.fibers.Suspendable
 import com.n2.moon.tower.contracts.TowerRentalContract
-import com.n2.moon.tower.states.TowerState
+import com.n2.moon.tower.states.TowerRentalProposalState
 import net.corda.core.contracts.Command
 import net.corda.core.contracts.StateAndContract
 import net.corda.core.contracts.UniqueIdentifier
@@ -30,7 +30,7 @@ class AgreeTowerRentalAgreementFlow(val linearId: UniqueIdentifier,
 
         // Stage 1. Retrieve Tower specified by linearId from the vault.
         val queryCriteria = QueryCriteria.LinearStateQueryCriteria(linearId = listOf(linearId))
-        val towerStateAndRef =  serviceHub.vaultService.queryBy<TowerState>(queryCriteria).states.single()
+        val towerStateAndRef =  serviceHub.vaultService.queryBy<TowerRentalProposalState>(queryCriteria).states.single()
         val inputIou = towerStateAndRef.state.data
 
         // Stage 2. This flow can only be initiated by the current recipient.
@@ -90,7 +90,7 @@ class AgreeTowerRentalAgreementFlowResponder(val flowSession: FlowSession): Flow
         val signedTransactionFlow = object : SignTransactionFlow(flowSession) {
             override fun checkTransaction(stx: SignedTransaction) = requireThat {
                 val output = stx.tx.outputs.single().data
-                "This must be an Tower transaction" using (output is TowerState)
+                "This must be an Tower transaction" using (output is TowerRentalProposalState)
             }
         }
         val txWeJustSignedId = subFlow(signedTransactionFlow)

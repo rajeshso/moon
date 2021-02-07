@@ -10,16 +10,16 @@ import java.util.*
 
 /**
  * This is where you'll add the definition of your state object. Look at the unit tests in [TowerStateTests] for
- * instructions on how to complete the [TowerState] class.
+ * instructions on how to complete the [TowerRentalProposalState] class.
  *
- * Remove the "val data: String = "data" property before starting the [TowerState] tasks.
+ * Remove the "val data: String = "data" property before starting the [TowerRentalProposalState] tasks.
  */
 @BelongsToContract(TowerRentalContract::class)
-data class TowerState(val amount: Amount<Currency>,
-                      val lender: Party,
-                      val borrower: Party,
-                      val paid: Amount<Currency> = Amount(0, amount.token),
-                      override val linearId: UniqueIdentifier = UniqueIdentifier()): LinearState {
+data class TowerRentalProposalState(val amount: Amount<Currency>,
+                                    val lender: Party,
+                                    val borrower: Party,
+                                    val paid: Amount<Currency> = Amount(0, amount.token),
+                                    override val linearId: UniqueIdentifier = UniqueIdentifier()): LinearState {
     /**
      *  This property holds a list of the nodes which can "use" this state in a valid transaction. In this case, the
      *  lender or the borrower.

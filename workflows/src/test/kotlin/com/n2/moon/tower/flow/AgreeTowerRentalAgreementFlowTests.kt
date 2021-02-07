@@ -5,7 +5,7 @@ import com.n2.moon.tower.flows.AgreeTowerRentalAgreementFlow
 import com.n2.moon.tower.flows.AgreeTowerRentalAgreementFlowResponder
 import com.n2.moon.tower.flows.ProposeTowerRentalAgreementFlow
 import com.n2.moon.tower.flows.ProposeTowerRentalAgreementFlowResponder
-import com.n2.moon.tower.states.TowerState
+import com.n2.moon.tower.states.TowerRentalProposalState
 import net.corda.core.contracts.StateRef
 import net.corda.core.contracts.TransactionVerificationException
 import net.corda.core.contracts.UniqueIdentifier
@@ -56,8 +56,8 @@ class AgreeTowerRentalAgreementFlowTests {
     /**
      * Issue an Tower on the ledger, we need to do this before we can transfer one.
      */
-    private fun installTower(towerState: TowerState): SignedTransaction {
-        val flow = ProposeTowerRentalAgreementFlow(towerState)
+    private fun installTower(towerRentalProposalState: TowerRentalProposalState): SignedTransaction {
+        val flow = ProposeTowerRentalAgreementFlow(towerRentalProposalState)
         val future = a.startFlow(flow)
         mockNetwork.runNetwork()
         return future.getOrThrow()
@@ -72,8 +72,8 @@ class AgreeTowerRentalAgreementFlowTests {
      * - This time our transaction has an input state, so we need to retrieve it from the vault!
      * - You can use the [serviceHub.vaultService.queryBy] method to get the latest linear states of a particular
      *   type from the vault. It returns a list of states matching your query.
-     * - Use the [UniqueIdentifier] which is passed into the flow to retrieve the correct [TowerState].
-     * - Use the [TowerState.withNewLender] method to create a copy of the state with a new lender.
+     * - Use the [UniqueIdentifier] which is passed into the flow to retrieve the correct [TowerRentalProposalState].
+     * - Use the [TowerRentalProposalState.withNewLender] method to create a copy of the state with a new lender.
      * - Create a Command - we will need to use the Transfer command.
      * - Remember, as we are involving three parties we will need to collect three signatures, so need to add three
      *   [PublicKey]s to the Command's signers list. We can get the signers from the input Tower and the new Tower you
@@ -85,8 +85,8 @@ class AgreeTowerRentalAgreementFlowTests {
     fun flowReturnsCorrectlyFormedPartiallySignedTransaction() {
         val lender = a.info.chooseIdentityAndCert().party
         val borrower = b.info.chooseIdentityAndCert().party
-        val stx = installTower(TowerState(10.POUNDS, lender, borrower))
-        val inputTower = stx.tx.outputs.single().data as TowerState
+        val stx = installTower(TowerRentalProposalState(10.POUNDS, lender, borrower))
+        val inputTower = stx.tx.outputs.single().data as TowerRentalProposalState
         val flow = AgreeTowerRentalAgreementFlow(inputTower.linearId, c.info.chooseIdentityAndCert().party)
         val future = a.startFlow(flow)
         mockNetwork.runNetwork()
@@ -97,7 +97,7 @@ class AgreeTowerRentalAgreementFlowTests {
         assert(ptx.tx.outputs.size == 1)
         assert(ptx.tx.inputs.single() == StateRef(stx.id, 0))
         println("Input state ref: ${ptx.tx.inputs.single()} == ${StateRef(stx.id, 0)}")
-        val outputTower = ptx.tx.outputs.single().data as TowerState
+        val outputTower = ptx.tx.outputs.single().data as TowerRentalProposalState
         println("Output state: $outputTower")
         val command = ptx.tx.commands.single()
         assert(command.value == TowerRentalContract.Commands.AgreeTowerRentalAgreement())
@@ -110,7 +110,7 @@ class AgreeTowerRentalAgreementFlowTests {
      * We need to make sure that only the current lender can execute this flow.
      * TODO: Amend the [ProposeTowerRentalAgreement] to only allow the current lender to execute the flow.
      * Hint:
-     * - Remember: You can use the node's identity and compare it to the [Party] object within the [TowerState] you
+     * - Remember: You can use the node's identity and compare it to the [Party] object within the [TowerRentalProposalState] you
      *   retrieved from the vault.
      * - Throw an [IllegalArgumentException] if the wrong party attempts to run the flow!
      */
@@ -118,8 +118,8 @@ class AgreeTowerRentalAgreementFlowTests {
     fun flowCanOnlyBeRunByCurrentLender() {
         val lender = a.info.chooseIdentityAndCert().party
         val borrower = b.info.chooseIdentityAndCert().party
-        val stx = installTower(TowerState(10.POUNDS, lender, borrower))
-        val inputTower = stx.tx.outputs.single().data as TowerState
+        val stx = installTower(TowerRentalProposalState(10.POUNDS, lender, borrower))
+        val inputTower = stx.tx.outputs.single().data as TowerRentalProposalState
         val flow = AgreeTowerRentalAgreementFlow(inputTower.linearId, c.info.chooseIdentityAndCert().party)
         val future = b.startFlow(flow)
         mockNetwork.runNetwork()
@@ -128,15 +128,15 @@ class AgreeTowerRentalAgreementFlowTests {
 
     /**
      * Task 3.
-     * Check that an [TowerState] cannot be transferred to the same lender.
+     * Check that an [TowerRentalProposalState] cannot be transferred to the same lender.
      * TODO: You shouldn't have to do anything additional to get this test to pass. Belts and Braces!
      */
     @Test
     fun towerCannotBeTransferredToSameParty() {
         val lender = a.info.chooseIdentityAndCert().party
         val borrower = b.info.chooseIdentityAndCert().party
-        val stx = installTower(TowerState(10.POUNDS, lender, borrower))
-        val inputTower = stx.tx.outputs.single().data as TowerState
+        val stx = installTower(TowerRentalProposalState(10.POUNDS, lender, borrower))
+        val inputTower = stx.tx.outputs.single().data as TowerRentalProposalState
         val flow = AgreeTowerRentalAgreementFlow(inputTower.linearId, lender)
         val future = a.startFlow(flow)
         mockNetwork.runNetwork()
@@ -154,8 +154,8 @@ class AgreeTowerRentalAgreementFlowTests {
     fun flowReturnsTransactionSignedByAllParties() {
         val lender = a.info.chooseIdentityAndCert().party
         val borrower = b.info.chooseIdentityAndCert().party
-        val stx = installTower(TowerState(10.POUNDS, lender, borrower))
-        val inputTower = stx.tx.outputs.single().data as TowerState
+        val stx = installTower(TowerRentalProposalState(10.POUNDS, lender, borrower))
+        val inputTower = stx.tx.outputs.single().data as TowerRentalProposalState
         val flow = AgreeTowerRentalAgreementFlow(inputTower.linearId, c.info.chooseIdentityAndCert().party)
         val future = a.startFlow(flow)
         mockNetwork.runNetwork()
@@ -171,8 +171,8 @@ class AgreeTowerRentalAgreementFlowTests {
     fun flowReturnsTransactionSignedByAllPartiesAndNotary() {
         val lender = a.info.chooseIdentityAndCert().party
         val borrower = b.info.chooseIdentityAndCert().party
-        val stx = installTower(TowerState(10.POUNDS, lender, borrower))
-        val inputTower = stx.tx.outputs.single().data as TowerState
+        val stx = installTower(TowerRentalProposalState(10.POUNDS, lender, borrower))
+        val inputTower = stx.tx.outputs.single().data as TowerRentalProposalState
         val flow = AgreeTowerRentalAgreementFlow(inputTower.linearId, c.info.chooseIdentityAndCert().party)
         val future = a.startFlow(flow)
         mockNetwork.runNetwork()

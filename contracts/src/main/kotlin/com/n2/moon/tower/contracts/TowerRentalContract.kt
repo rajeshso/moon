@@ -1,13 +1,13 @@
 package com.n2.moon.tower.contracts
 
 
-import com.n2.moon.tower.states.TowerState
+import com.n2.moon.tower.states.TowerRentalProposalState
 import net.corda.core.contracts.*
 import net.corda.core.transactions.LedgerTransaction
 import net.corda.finance.contracts.asset.Cash
 import net.corda.finance.contracts.utils.sumCash
 /**
- * This is where you'll add the contract code which defines how the [TowerState] behaves. Look at the unit tests in
+ * This is where you'll add the contract code which defines how the [TowerRentalProposalState] behaves. Look at the unit tests in
  * [TowerRentalContractTests] for instructions on how to complete the [TowerRentalContract] class.
  */
 class TowerRentalContract : Contract {
@@ -40,7 +40,7 @@ class TowerRentalContract : Contract {
             is Commands.ProposeTowerRentalAgreement -> requireThat {
                 "No inputs should be consumed when issuing an Tower." using (tx.inputs.isEmpty())
                 "Only one output state should be created when issuing an Tower." using (tx.outputs.size == 1)
-                val towerState = tx.outputsOfType<TowerState>().single()
+                val towerState = tx.outputsOfType<TowerRentalProposalState>().single()
                 "A newly issued Tower must have a positive amount." using (towerState.amount.quantity > 0)
                 "The lender and borrower cannot have the same identity." using (towerState.borrower != towerState.lender)
                 "Both lender and borrower together only may sign Tower issue transaction." using
@@ -49,8 +49,8 @@ class TowerRentalContract : Contract {
             is Commands.AgreeTowerRentalAgreement -> requireThat {
                 "An Tower transfer transaction should only consume one input state." using (tx.inputs.size == 1)
                 "An Tower transfer transaction should only create one output state." using (tx.outputs.size == 1)
-                val input = tx.inputsOfType<TowerState>().single()
-                val output = tx.outputsOfType<TowerState>().single()
+                val input = tx.inputsOfType<TowerRentalProposalState>().single()
+                val output = tx.outputsOfType<TowerRentalProposalState>().single()
                 "Only the lender property may change." using (input == output.withNewLender(input.lender))
                 "The lender property must change in a transfer." using (input.lender != output.lender)
                 "The borrower, old lender and new lender only must sign an Tower transfer transaction" using
@@ -59,7 +59,7 @@ class TowerRentalContract : Contract {
             }
             is Commands.RejectTowerRentalAgreement -> {
                 // Check there is only one group of Towers and that there is always an input Tower.
-                val towers = tx.groupStates<TowerState, UniqueIdentifier> { it.linearId }.single()
+                val towers = tx.groupStates<TowerRentalProposalState, UniqueIdentifier> { it.linearId }.single()
                 requireThat { "There must be one input Tower." using (towers.inputs.size == 1) }
                 // Check there are output cash states.
                 val cash = tx.outputsOfType<Cash.State>()
