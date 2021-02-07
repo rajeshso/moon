@@ -38,17 +38,17 @@ class TowerRentalContract : Contract {
         val command = tx.commands.requireSingleCommand<Commands>()
         when (command.value) {
             is Commands.ProposeTowerRentalAgreement -> requireThat {
-                "No inputs should be consumed when issuing an Tower." using (tx.inputs.isEmpty())
-                "Only one output state should be created when issuing an Tower." using (tx.outputs.size == 1)
+                "No inputs should be consumed when issuing a Tower Rental Proposal." using (tx.inputs.isEmpty())
+                "Only one output state should be created when issuing a Tower Rental Proposal." using (tx.outputs.size == 1)
                 val towerState = tx.outputsOfType<TowerRentalProposalState>().single()
-                "A newly issued Tower must have a positive rental amount." using (towerState.rentalAmount.quantity > 0)
+                "A newly issued Tower Rental Proposal must have a positive rental amount." using (towerState.rentalAmount.quantity > 0)
                 "The proposer and agreementParty cannot have the same identity." using (towerState.agreementParty != towerState.proposerParty)
                 "Both proposer and agreementParty together only may sign Tower Rental Proposal transaction." using
                         (command.signers.toSet() == towerState.participants.map { it.owningKey }.toSet())
             }
             is Commands.AgreeTowerRentalAgreement -> requireThat {
-                "An Tower transfer transaction should only consume one input state." using (tx.inputs.size == 1)
-                "An Tower transfer transaction should only create one output state." using (tx.outputs.size == 1)
+                "An agreement to a tower rental proposal transaction should only consume one input state." using (tx.inputs.size == 1)
+                "An agreement to a Tower rental proposal transaction should only create one output state." using (tx.outputs.size == 1)
                 val input = tx.inputsOfType<TowerRentalProposalState>().single()
                 val output = tx.outputsOfType<TowerRentalProposalState>().single()
                 "Only the proposer property may change." using (input == output.withNewProposer(input.proposerParty))
@@ -60,7 +60,7 @@ class TowerRentalContract : Contract {
             is Commands.RejectTowerRentalAgreement -> {
                 // Check there is only one group of Towers and that there is always an input Tower.
                 val towers = tx.groupStates<TowerRentalProposalState, UniqueIdentifier> { it.linearId }.single()
-                requireThat { "There must be one input Tower." using (towers.inputs.size == 1) }
+                requireThat { "There must be one input Tower Rental Proposal." using (towers.inputs.size == 1) }
                 // Check there are output cash states.
                 val cash = tx.outputsOfType<Cash.State>()
                 requireThat { "There must be output cash." using (cash.isNotEmpty()) }

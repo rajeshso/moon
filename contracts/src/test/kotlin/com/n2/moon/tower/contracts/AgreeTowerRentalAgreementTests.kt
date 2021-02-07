@@ -99,24 +99,24 @@ class  AgreeTowerRentalAgreementTests {
                 input(TowerRentalContract::class.java.name, DummyState())
                 output(TowerRentalContract::class.java.name, iou.withNewProposer(CHARLIE.party))
                 command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
-                this `fails with` "An Tower transfer transaction should only consume one input state."
+                this `fails with` "An agreement to a tower rental proposal transaction should only consume one input state."
             }
             transaction {
                 output(TowerRentalContract::class.java.name, iou)
                 command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
-                this `fails with` "An Tower transfer transaction should only consume one input state."
+                this `fails with` "An agreement to a tower rental proposal transaction should only consume one input state."
             }
             transaction {
                 input(TowerRentalContract::class.java.name, iou)
                 command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
-                this `fails with` "An Tower transfer transaction should only create one output state."
+                this `fails with` "An agreement to a Tower rental proposal transaction should only create one output state."
             }
             transaction {
                 input(TowerRentalContract::class.java.name, iou)
                 output(TowerRentalContract::class.java.name, iou.withNewProposer(CHARLIE.party))
                 output(TowerRentalContract::class.java.name, DummyState())
                 command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
-                this `fails with` "An Tower transfer transaction should only create one output state."
+                this `fails with` "An agreement to a Tower rental proposal transaction should only create one output state."
             }
             transaction {
                 input(TowerRentalContract::class.java.name, iou)

@@ -145,7 +145,7 @@ class RejectTowerRentalProposalTests {
             transaction {
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.RejectTowerRentalAgreement())
                 output(TowerRentalContract.TOWER_CONTRACT_ID, iou)
-                this `fails with` "There must be one input Tower."
+                this `fails with` "There must be one input Tower Rental Proposal."
             }
             transaction {
                 input(TowerRentalContract.TOWER_CONTRACT_ID, iouOne)

@@ -120,7 +120,7 @@ class ProposeTowerRentalAgreementFlowTests {
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.ProposeTowerRentalAgreement())
                 output(TowerRentalContract.TOWER_CONTRACT_ID, towerState) // Two outputs fails.
                 output(TowerRentalContract.TOWER_CONTRACT_ID, towerState)
-                this `fails with` "Only one output state should be created when issuing an Tower."
+                this `fails with` "Only one output state should be created when issuing a Tower Rental Proposal."
             }
             transaction {
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.ProposeTowerRentalAgreement())
@@ -156,7 +156,7 @@ class ProposeTowerRentalAgreementFlowTests {
             transaction {
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.ProposeTowerRentalAgreement())
                 output(TowerRentalContract.TOWER_CONTRACT_ID, TowerRentalProposalState(0.POUNDS, ALICE.party, BOB.party)) // Zero amount fails.
-                this `fails with` "A newly issued Tower must have a positive rental amount."
+                this `fails with` "A newly issued Tower Rental Proposal must have a positive rental amount."
             }
             transaction {
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.ProposeTowerRentalAgreement())
