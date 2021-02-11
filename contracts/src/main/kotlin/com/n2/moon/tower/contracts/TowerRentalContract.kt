@@ -2,10 +2,12 @@ package com.n2.moon.tower.contracts
 
 
 import com.n2.moon.tower.states.TowerRentalProposalState
+import com.n2.moon.tower.states.TowerState
 import net.corda.core.contracts.*
 import net.corda.core.transactions.LedgerTransaction
 import net.corda.finance.contracts.asset.Cash
 import net.corda.finance.contracts.utils.sumCash
+
 /**
  * This is where you'll add the contract code which defines how the [TowerRentalProposalState] behaves. Look at the unit tests in
  * [TowerRentalContractTests] for instructions on how to complete the [TowerRentalContract] class.
@@ -23,6 +25,7 @@ class TowerRentalContract : Contract {
      */
     interface Commands : CommandData {
 
+        class IssueTower : TypeOnlyCommandData(), Commands
         class ProposeTowerRentalAgreement : TypeOnlyCommandData(), Commands
         class AgreeTowerRentalAgreement : TypeOnlyCommandData(), Commands
         class RejectTowerRentalAgreement : TypeOnlyCommandData(), Commands
@@ -37,6 +40,15 @@ class TowerRentalContract : Contract {
 
         val command = tx.commands.requireSingleCommand<Commands>()
         when (command.value) {
+            is Commands.IssueTower -> requireThat {
+                "No inputs should be consumed when issuing a Tower." using (tx.inputs.isEmpty())
+                "Only one output state should be created when issuing a Tower." using (tx.outputs.size == 1)
+                val towerState = tx.outputsOfType<TowerState>().single()
+                "A newly issued Tower must not have booked slots." using (towerState.bookedSlots == 0)
+                "A newly issued Tower must not have mnos." using (towerState.mobileNetworkOperators.isEmpty())
+                "only tower infrastructure provider may sign Tower issue transaction." using
+                        (command.signers.toSet() == towerState.participants.map { it.owningKey }.toSet())
+            }
             is Commands.ProposeTowerRentalAgreement -> requireThat {
                 "No inputs should be consumed when issuing a Tower Rental Proposal." using (tx.inputs.isEmpty())
                 "Only one output state should be created when issuing a Tower Rental Proposal." using (tx.outputs.size == 1)

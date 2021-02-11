@@ -4,16 +4,20 @@ package com.n2.moon.tower.flows
 import co.paralleluniverse.fibers.Suspendable
 import com.n2.moon.tower.contracts.TowerRentalContract
 import com.n2.moon.tower.states.TowerRentalProposalState
+import com.n2.moon.tower.states.TowerState
 import net.corda.confidential.IdentitySyncFlow
 import net.corda.core.contracts.Amount
 import net.corda.core.contracts.Command
+import net.corda.core.contracts.StateAndContract
 import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.flows.*
+import net.corda.core.identity.Party
 import net.corda.core.node.services.queryBy
 import net.corda.core.node.services.vault.QueryCriteria
 import net.corda.core.transactions.SignedTransaction
 import net.corda.core.transactions.TransactionBuilder
 import net.corda.core.utilities.OpaqueBytes
+import net.corda.core.utilities.ProgressTracker
 import net.corda.finance.contracts.asset.Cash
 import net.corda.finance.flows.CashIssueFlow
 import net.corda.finance.workflows.asset.CashUtils
@@ -29,6 +33,8 @@ import java.util.*
 @InitiatingFlow
 @StartableByRPC
 class RejectTowerRentalProposalFlow(val linearId: UniqueIdentifier, val amount: Amount<Currency>): FlowLogic<SignedTransaction>() {
+    override val progressTracker = ProgressTracker()
+
     @Suspendable
     override fun call(): SignedTransaction {
 
@@ -99,6 +105,8 @@ class RejectTowerRentalProposalFlow(val linearId: UniqueIdentifier, val amount: 
  */
 @InitiatedBy(RejectTowerRentalProposalFlow::class)
 class ReRejectTowerRentalProposalFlowResponder(val flowSession: FlowSession): FlowLogic<SignedTransaction>() {
+    override val progressTracker = ProgressTracker()
+
     @Suspendable
     override fun call(): SignedTransaction {
 
@@ -121,7 +129,9 @@ class ReRejectTowerRentalProposalFlowResponder(val flowSession: FlowSession): Fl
  */
 @InitiatingFlow
 @StartableByRPC
-class SelfIssueTowerFlow(val amount: Amount<Currency>) : FlowLogic<Cash.State>() {
+class SelfIssueCashFlow(val amount: Amount<Currency>) : FlowLogic<Cash.State>() {
+    override val progressTracker = ProgressTracker()
+
     @Suspendable
     override fun call(): Cash.State {
         /** Create the cash issue command. */
@@ -142,5 +152,51 @@ class SelfIssueTowerFlow(val amount: Amount<Currency>) : FlowLogic<Cash.State>()
         val cashIssueTransaction = subFlow(CashIssueFlow(amount, issueRef, notary))
         /** Return the cash output. */
         return cashIssueTransaction.stx.tx.outputs.single().data as Cash.State
+    }
+}
+
+/**
+ * Self issues the calling node a Tower in the desired location.
+ */
+@InitiatingFlow
+@StartableByRPC
+class SelfIssueTowerFlow(val latitude: String,
+                         val longitude: String,
+                         val height: String,
+                         val spec: String,
+                         val totalSlots: Int,
+                         val rentalAmount: Amount<Currency>,
+                         val towerInfrastructureProvider: Party) : FlowLogic<TowerState>() {
+    override val progressTracker = ProgressTracker()
+
+    @Suspendable
+    override fun call(): TowerState {
+        val notary = serviceHub.networkMapCache.notaryIdentities.single()
+
+        // Create an instance of your output state
+        val os: TowerState = TowerState(latitude,
+                longitude,
+                height,
+                spec,
+                totalSlots,
+                rentalAmount,
+                towerInfrastructureProvider)
+
+        // Create Transaction Builder and call verify
+        val transactionBuilder: TransactionBuilder = TransactionBuilder(notary = notary)
+        transactionBuilder.verify(serviceHub);
+
+        val transferCommand = Command(TowerRentalContract.Commands.IssueTower(), this.ourIdentity.owningKey)
+
+        transactionBuilder.withItems(os,
+                StateAndContract(os, TowerRentalContract.TOWER_CONTRACT_ID),
+                transferCommand)
+
+        transactionBuilder.verify(serviceHub)
+        val selfSignedTx = serviceHub.signInitialTransaction(transactionBuilder)
+
+        //Just pass an empty list of flow session in the finality flow.
+        val emptyFlowSessions: Collection<FlowSession> = HashSet<FlowSession>();
+        return subFlow(FinalityFlow(selfSignedTx, emptyList())).tx.outputsOfType(TowerState::class.java).single()
     }
 }
