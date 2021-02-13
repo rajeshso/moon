@@ -65,7 +65,7 @@ class  AgreeTowerRentalAgreementTests {
      */
     @Test
     fun mustHandleMultipleCommandValues() {
-        val towerRentalProposalState = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party)
+        val towerRentalProposalState = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party, towerState = towerState)
         ledgerServices.ledger {
             transaction {
                 output(TowerRentalContract::class.java.name, towerRentalProposalState)
@@ -95,7 +95,7 @@ class  AgreeTowerRentalAgreementTests {
      */
     @Test
     fun mustHaveOneInputAndOneOutput() {
-        val towerRentalProposalState = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party)
+        val towerRentalProposalState = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party, towerState = towerState)
         ledgerServices.ledger {
             transaction {
                 input(TowerRentalContract::class.java.name, towerRentalProposalState)
@@ -143,23 +143,23 @@ class  AgreeTowerRentalAgreementTests {
      */
     @Test
     fun onlyTheProposerMayChange() {
-        val towerRentalProposalState = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party)
+        val towerRentalProposalState = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party, towerState = towerState)
         ledgerServices.ledger {
             transaction {
-                input(TowerRentalContract::class.java.name, TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party))
-                output(TowerRentalContract::class.java.name, TowerRentalProposalState(1.DOLLARS, ALICE.party, BOB.party))
+                input(TowerRentalContract::class.java.name, TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party, towerState = towerState))
+                output(TowerRentalContract::class.java.name, TowerRentalProposalState(1.DOLLARS, ALICE.party, BOB.party, towerState = towerState))
                 command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
                 this `fails with` "Only the proposer property may change."
             }
             transaction {
-                input(TowerRentalContract::class.java.name, TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party))
-                output(TowerRentalContract::class.java.name, TowerRentalProposalState(10.DOLLARS, ALICE.party, CHARLIE.party))
+                input(TowerRentalContract::class.java.name, TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party, towerState = towerState))
+                output(TowerRentalContract::class.java.name, TowerRentalProposalState(10.DOLLARS, ALICE.party, CHARLIE.party, towerState = towerState))
                 command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
                 this `fails with` "Only the proposer property may change."
             }
             transaction {
-                input(TowerRentalContract::class.java.name, TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party, 5.DOLLARS))
-                output(TowerRentalContract::class.java.name, TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party, 10.DOLLARS))
+                input(TowerRentalContract::class.java.name, TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party, 5.DOLLARS, towerState = towerState))
+                output(TowerRentalContract::class.java.name, TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party, 10.DOLLARS, towerState = towerState))
                 command(listOf(ALICE.publicKey, BOB.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.AgreeTowerRentalAgreement())
                 this `fails with` "Only the proposer property may change."
             }
@@ -179,7 +179,7 @@ class  AgreeTowerRentalAgreementTests {
      */
     @Test
     fun theProposerMustChange() {
-        val towerRentalProposalState = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party)
+        val towerRentalProposalState = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party, towerState = towerState)
         ledgerServices.ledger {
             transaction {
                 input(TowerRentalContract::class.java.name, towerRentalProposalState)
@@ -203,7 +203,7 @@ class  AgreeTowerRentalAgreementTests {
      */
     @Test
     fun allParticipantsMustSign() {
-        val towerRentalProposalState = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party)
+        val towerRentalProposalState = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party, towerState= towerState)
         ledgerServices.ledger {
             transaction {
                 input(TowerRentalContract::class.java.name, towerRentalProposalState)

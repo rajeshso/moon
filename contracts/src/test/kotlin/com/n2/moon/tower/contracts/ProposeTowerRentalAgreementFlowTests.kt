@@ -57,7 +57,7 @@ class ProposeTowerRentalAgreementFlowTests {
      */
     @Test
     fun mustIncludeIssueCommand() {
-        val towerRentalProposalState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party)
+        val towerRentalProposalState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party, towerState = towerState)
         ledgerServices.ledger {
             transaction {
                 output(TowerRentalContract.TOWER_CONTRACT_ID,  towerRentalProposalState)
@@ -92,7 +92,7 @@ class ProposeTowerRentalAgreementFlowTests {
      */
     //@Disabled
     fun issueTransactionMustHaveNoInputs() {
-        val towerRentalProposalState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party)
+        val towerRentalProposalState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party, towerState = towerState)
         ledgerServices.ledger {
             transaction {
                 input(TowerRentalContract.TOWER_CONTRACT_ID, DummyState())
@@ -117,7 +117,7 @@ class ProposeTowerRentalAgreementFlowTests {
      */
     @Test
     fun issueTransactionMustHaveOneOutput() {
-        val towerRentalProposalState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party)
+        val towerRentalProposalState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party, towerState = towerState)
         ledgerServices.ledger {
             transaction {
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.ProposeTowerRentalAgreement())
@@ -158,22 +158,22 @@ class ProposeTowerRentalAgreementFlowTests {
         ledgerServices.ledger {
             transaction {
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.ProposeTowerRentalAgreement())
-                output(TowerRentalContract.TOWER_CONTRACT_ID, TowerRentalProposalState(0.POUNDS, ALICE.party, BOB.party)) // Zero amount fails.
+                output(TowerRentalContract.TOWER_CONTRACT_ID, TowerRentalProposalState(0.POUNDS, ALICE.party, BOB.party, towerState = towerState)) // Zero amount fails.
                 this `fails with` "A newly issued Tower Rental Proposal must have a positive rental amount."
             }
             transaction {
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.ProposeTowerRentalAgreement())
-                output(TowerRentalContract.TOWER_CONTRACT_ID, TowerRentalProposalState(100.SWISS_FRANCS, ALICE.party, BOB.party))
+                output(TowerRentalContract.TOWER_CONTRACT_ID, TowerRentalProposalState(100.SWISS_FRANCS, ALICE.party, BOB.party, towerState = towerState))
                 this.verifies()
             }
             transaction {
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.ProposeTowerRentalAgreement())
-                output(TowerRentalContract.TOWER_CONTRACT_ID, TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party))
+                output(TowerRentalContract.TOWER_CONTRACT_ID, TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party, towerState = towerState))
                 this.verifies()
             }
             transaction {
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.ProposeTowerRentalAgreement())
-                output(TowerRentalContract.TOWER_CONTRACT_ID, TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party))
+                output(TowerRentalContract.TOWER_CONTRACT_ID, TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party, towerState = towerState))
                 this.verifies()
             }
         }
@@ -189,8 +189,8 @@ class ProposeTowerRentalAgreementFlowTests {
      */
     @Test
     fun proposerAndAgreementPartyCannotBeTheSame() {
-        val towerRentalProposalState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party)
-        val agreementPartyIsProposerRentalState = TowerRentalProposalState(10.POUNDS, ALICE.party, ALICE.party)
+        val towerRentalProposalState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party, towerState = towerState)
+        val agreementPartyIsProposerRentalState = TowerRentalProposalState(10.POUNDS, ALICE.party, ALICE.party, towerState = towerState)
         ledgerServices.ledger {
             transaction {
                 command(listOf(ALICE.publicKey, BOB.publicKey),TowerRentalContract.Commands.ProposeTowerRentalAgreement())
@@ -226,7 +226,7 @@ class ProposeTowerRentalAgreementFlowTests {
      */
     @Test
     fun proposerAndAgreementPartyMustSignIssueTransaction() {
-        val towerRentalProposalState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party)
+        val towerRentalProposalState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party, towerState = towerState)
         ledgerServices.ledger {
             transaction {
                 command(DUMMY.publicKey, TowerRentalContract.Commands.ProposeTowerRentalAgreement())

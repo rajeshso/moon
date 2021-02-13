@@ -79,7 +79,7 @@ class InitiateTowerRentalProposalFlowTests {
     fun flowReturnsCorrectlyFormedPartiallySignedTransaction() {
         val proposer = a.info.chooseIdentityAndCert().party
         val agreementParty = b.info.chooseIdentityAndCert().party
-        val towerRentalProposalState = TowerRentalProposalState(10.POUNDS, proposer, agreementParty)
+        val towerRentalProposalState = TowerRentalProposalState(10.POUNDS, proposer, agreementParty, towerState = TowerState("some latitude","some longitude", "some height",             "some spec",10, 10.POUNDS, ALICE.party, 0))
         val flow = InitiateTowerRentalProposalFlow(towerRentalProposalState)
         val future = a.startFlow(flow)
         mockNetwork.runNetwork()
@@ -112,17 +112,17 @@ class InitiateTowerRentalProposalFlowTests {
         // Check that a zero amount TowerState fails.
         val proposer = a.info.chooseIdentityAndCert().party
         val agreementParty = b.info.chooseIdentityAndCert().party
-        val zeroRentalState = TowerRentalProposalState(0.POUNDS, proposer, agreementParty)
+        val zeroRentalState = TowerRentalProposalState(0.POUNDS, proposer, agreementParty, towerState = TowerState("some latitude","some longitude", "some height",             "some spec",10, 10.POUNDS, ALICE.party, 0))
         val futureOne = a.startFlow(InitiateTowerRentalProposalFlow(zeroRentalState))
         mockNetwork.runNetwork()
         assertFailsWith<TransactionVerificationException> { futureOne.getOrThrow() }
         // Check that an TowerState with the same participants fails.
-        val agreementPartyIsProposerTower = TowerRentalProposalState(10.POUNDS, proposer, proposer)
+        val agreementPartyIsProposerTower = TowerRentalProposalState(10.POUNDS, proposer, proposer, towerState = TowerState("some latitude","some longitude", "some height",             "some spec",10, 10.POUNDS, ALICE.party, 0))
         val futureTwo = a.startFlow(InitiateTowerRentalProposalFlow(agreementPartyIsProposerTower))
         mockNetwork.runNetwork()
         assertFailsWith<TransactionVerificationException> { futureTwo.getOrThrow() }
         // Check a good TowerState passes.
-        val towerRentalProposalState = TowerRentalProposalState(10.POUNDS, proposer, agreementParty)
+        val towerRentalProposalState = TowerRentalProposalState(10.POUNDS, proposer, agreementParty, towerState = TowerState("some latitude","some longitude", "some height",             "some spec",10, 10.POUNDS, ALICE.party, 0))
         val futureThree = a.startFlow(InitiateTowerRentalProposalFlow(towerRentalProposalState))
         mockNetwork.runNetwork()
         futureThree.getOrThrow()
@@ -157,7 +157,7 @@ class InitiateTowerRentalProposalFlowTests {
     fun flowReturnsTransactionSignedByBothParties() {
         val proposer = a.info.chooseIdentityAndCert().party
         val agreementParty = b.info.chooseIdentityAndCert().party
-        val towerRentalProposalState = TowerRentalProposalState(10.POUNDS, proposer, agreementParty)
+        val towerRentalProposalState = TowerRentalProposalState(10.POUNDS, proposer, agreementParty, towerState = TowerState("some latitude","some longitude", "some height",             "some spec",10, 10.POUNDS, ALICE.party, 0))
         val flow = InitiateTowerRentalProposalFlow(towerRentalProposalState)
         val future = a.startFlow(flow)
         mockNetwork.runNetwork()
@@ -181,7 +181,7 @@ class InitiateTowerRentalProposalFlowTests {
     fun flowRecordsTheSameTransactionInBothPartyVaults() {
         val proposer = a.info.chooseIdentityAndCert().party
         val agreementParty = b.info.chooseIdentityAndCert().party
-        val rentalProposalState = TowerRentalProposalState(10.POUNDS, proposer, agreementParty)
+        val rentalProposalState = TowerRentalProposalState(10.POUNDS, proposer, agreementParty, towerState = TowerState("some latitude","some longitude", "some height",             "some spec",10, 10.POUNDS, ALICE.party, 0))
         val flow = InitiateTowerRentalProposalFlow(rentalProposalState)
         val future = a.startFlow(flow)
         mockNetwork.runNetwork()

@@ -53,7 +53,7 @@ class RejectTowerRentalProposalTests {
      */
     @Test
     fun mustIncludeSettleCommand() {
-        val towerRentalProposalState = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party)
+        val towerRentalProposalState = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party, towerState = towerState)
         val inputCash = createCashState(5.POUNDS, BOB.party)
         val outputCash = inputCash.withNewOwner(newOwner = ALICE.party).ownableState
         ledgerServices.ledger {
@@ -106,8 +106,8 @@ class RejectTowerRentalProposalTests {
      */
     @Test
     fun mustBeOneGroupOfIOUs() {
-        val rentalOne = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party)
-        val rentalTwo = TowerRentalProposalState(5.POUNDS, ALICE.party, BOB.party)
+        val rentalOne = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party, towerState = towerState)
+        val rentalTwo = TowerRentalProposalState(5.POUNDS, ALICE.party, BOB.party, towerState = towerState)
         val inputCash = createCashState(5.POUNDS, BOB.party)
         val outputCash = inputCash.withNewOwner(newOwner = ALICE.party)
         ledgerServices.ledger {
@@ -140,8 +140,8 @@ class RejectTowerRentalProposalTests {
      */
     @Test
     fun mustHaveOneInputIOU() {
-        val towerRentalProposalState = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party)
-        val rentalOne = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party)
+        val towerRentalProposalState = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party, towerState = towerState)
+        val rentalOne = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party, towerState = towerState)
         val tenPounds = createCashState(10.POUNDS, BOB.party)
         val fivePounds = createCashState(5.POUNDS, BOB.party)
         ledgerServices.ledger {
@@ -181,7 +181,7 @@ class RejectTowerRentalProposalTests {
      */
     @Test
     fun mustBeCashOutputStatesPresent() {
-        val towerRentalProposalState = TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party)
+        val towerRentalProposalState = TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party, towerState = towerState)
         val cash = createCashState(5.DOLLARS, BOB.party)
         val cashPayment = cash.withNewOwner(newOwner = ALICE.party)
         ledgerServices.ledger {
@@ -216,7 +216,7 @@ class RejectTowerRentalProposalTests {
      */
     @Test
     fun mustBeCashOutputStatesWithRecipientAsOwner() {
-        val towerRentalProposalState = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party)
+        val towerRentalProposalState = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party, towerState = towerState)
         val cash = createCashState(5.POUNDS, BOB.party)
         val invalidCashPayment = cash.withNewOwner(newOwner = CHARLIE.party)
         val validCashPayment = cash.withNewOwner(newOwner = ALICE.party)
@@ -257,7 +257,7 @@ class RejectTowerRentalProposalTests {
      */
     @Test
     fun cashSettlementAmountMustBeLessThanRemainingIOUAmount() {
-        val towerRentalProposalState = TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party)
+        val towerRentalProposalState = TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party, towerState = towerState)
         val elevenDollars = createCashState(11.DOLLARS, BOB.party)
         val tenDollars = createCashState(10.DOLLARS, BOB.party)
         val fiveDollars = createCashState(5.DOLLARS, BOB.party)
@@ -299,7 +299,7 @@ class RejectTowerRentalProposalTests {
      */
     @Test
     fun cashSettlementMustBeInTheCorrectCurrency() {
-        val towerRentalProposalState = TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party)
+        val towerRentalProposalState = TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party, towerState = towerState)
         val tenDollars = createCashState(10.DOLLARS, BOB.party)
         val tenPounds = createCashState(10.POUNDS, BOB.party)
         ledgerServices.ledger {
@@ -331,7 +331,7 @@ class RejectTowerRentalProposalTests {
      */
     @Test
     fun mustOnlyHaveOutputIOUIfNotFullySettling() {
-        val rentalProposalState = TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party)
+        val rentalProposalState = TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party, towerState = towerState)
         val tenDollars = createCashState(10.DOLLARS, BOB.party)
         val fiveDollars = createCashState(5.DOLLARS, BOB.party)
         ledgerServices.ledger {
@@ -379,7 +379,7 @@ class RejectTowerRentalProposalTests {
      */
     @Test
     fun onlyPaidPropertyMayChange() {
-        val rentalProposalState = TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party)
+        val rentalProposalState = TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party, towerState = towerState)
         val fiveDollars = createCashState(5.DOLLARS, BOB.party)
         ledgerServices.ledger {
             transaction {
@@ -410,7 +410,7 @@ class RejectTowerRentalProposalTests {
      */
     @Test
     fun mustBeSignedByAllParticipants() {
-        val towerRentalProposalState = TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party)
+        val towerRentalProposalState = TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party, towerState = towerState)
         val cash = createCashState(5.DOLLARS, BOB.party)
         val cashPayment = cash.withNewOwner(newOwner = ALICE.party)
         ledgerServices.ledger {

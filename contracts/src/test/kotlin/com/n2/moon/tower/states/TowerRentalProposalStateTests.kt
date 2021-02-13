@@ -99,7 +99,7 @@ class TowerRentalProposalStateTests {
      */
     @Test
     fun proposerIsParticipant() {
-        val towerState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party)
+        val towerState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party, towerState = TowerState("some latitude","some longitude", "some height",             "some spec",10, 10.POUNDS, ALICE.party, 0))
         assertNotEquals(towerState.participants.indexOf(ALICE.party), -1)
     }
 
@@ -109,7 +109,7 @@ class TowerRentalProposalStateTests {
      */
     @Test
     fun agreementPartyIsParticipant() {
-        val towerRentalProposalState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party)
+        val towerRentalProposalState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party, towerState = TowerState("some latitude","some longitude", "some height",             "some spec",10, 10.POUNDS, ALICE.party, 0))
         assertNotEquals(towerRentalProposalState.participants.indexOf(BOB.party), -1)
     }
 
@@ -143,7 +143,7 @@ class TowerRentalProposalStateTests {
         // Is the linearId field of the correct type?
         assertEquals(TowerRentalProposalState::class.java.getDeclaredField("linearId").type, UniqueIdentifier::class.java)
         // Check field is set to a not null value
-        val towerRentalProposalState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party)
+        val towerRentalProposalState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party, towerState = TowerState("some latitude","some longitude", "some height",             "some spec",10, 10.POUNDS, ALICE.party, 0))
         assertNotNull(towerRentalProposalState.linearId)
     }
 
@@ -181,7 +181,7 @@ class TowerRentalProposalStateTests {
      */
     @Test
     fun checkPayHelperMethod() {
-        val towerRentalProposalState = TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party)
+        val towerRentalProposalState = TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party, towerState = TowerState("some latitude","some longitude", "some height",             "some spec",10, 10.POUNDS, ALICE.party, 0))
         assertEquals(5.DOLLARS, towerRentalProposalState.pay(5.DOLLARS).paid)
         assertEquals(3.DOLLARS, towerRentalProposalState.pay(1.DOLLARS).pay(2.DOLLARS).paid)
         assertEquals(10.5.DOLLARS, towerRentalProposalState.pay(5.DOLLARS).pay(3.DOLLARS).pay(2.5.DOLLARS).paid)
@@ -193,7 +193,7 @@ class TowerRentalProposalStateTests {
      */
     @Test
     fun checkWithNewProposerHelperMethod() {
-        val towerRentalProposalState = TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party)
+        val towerRentalProposalState = TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party, towerState = TowerState("some latitude","some longitude", "some height",             "some spec",10, 10.POUNDS, ALICE.party, 0))
         assertEquals(MINICORP.party, towerRentalProposalState.withNewProposer(MINICORP.party).proposerParty)
         assertEquals(MEGACORP.party, towerRentalProposalState.withNewProposer(MINICORP.party).withNewProposer(MEGACORP.party).proposerParty)
     }
