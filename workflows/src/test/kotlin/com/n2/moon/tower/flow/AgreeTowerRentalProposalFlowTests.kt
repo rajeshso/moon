@@ -6,6 +6,7 @@ import com.n2.moon.tower.flows.AgreeTowerRentalProposalFlowResponder
 import com.n2.moon.tower.flows.InitiateTowerRentalProposalFlow
 import com.n2.moon.tower.flows.InitiateTowerRentalProposalFlowResponder
 import com.n2.moon.tower.states.TowerRentalProposalState
+import com.n2.moon.tower.states.TowerState
 import net.corda.core.contracts.StateRef
 import net.corda.core.contracts.TransactionVerificationException
 import net.corda.core.contracts.UniqueIdentifier
@@ -14,6 +15,7 @@ import net.corda.core.identity.Party
 import net.corda.core.transactions.SignedTransaction
 import net.corda.core.utilities.getOrThrow
 import net.corda.finance.POUNDS
+import net.corda.samples.obligation.ALICE
 import net.corda.testing.internal.chooseIdentityAndCert
 import net.corda.testing.node.MockNetwork
 import net.corda.testing.node.MockNetworkNotarySpec
@@ -29,6 +31,8 @@ import kotlin.test.assertFailsWith
  * Uncomment the unit tests and use the hints + unit test body to complete the Flows such that the unit tests pass.
  */
 class AgreeTowerRentalProposalFlowTests {
+    var towerState = TowerState("some latitude","some longitude", "some height",
+            "some spec",10, 10.POUNDS, ALICE.party, 0)
     lateinit var mockNetwork: MockNetwork
     lateinit var a: StartedMockNode
     lateinit var b: StartedMockNode

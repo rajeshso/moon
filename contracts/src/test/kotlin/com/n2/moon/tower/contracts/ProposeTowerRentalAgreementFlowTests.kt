@@ -1,6 +1,7 @@
 package com.n2.moon.tower.contracts
 
 import com.n2.moon.tower.states.TowerRentalProposalState
+import com.n2.moon.tower.states.TowerState
 import net.corda.core.contracts.*
 import net.corda.finance.DOLLARS
 import net.corda.finance.POUNDS
@@ -23,6 +24,8 @@ import org.junit.Test
 class ProposeTowerRentalAgreementFlowTests {
     // A pre-defined dummy command.
     class DummyCommand : TypeOnlyCommandData()
+    var towerState = TowerState("some latitude","some longitude", "some height",
+            "some spec",10, 10.POUNDS, ALICE.party, 0)
     private var ledgerServices = MockServices(listOf("com.n2.moon.tower.contracts"))
 
     /**

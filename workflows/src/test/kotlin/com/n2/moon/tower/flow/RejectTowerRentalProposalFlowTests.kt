@@ -6,6 +6,7 @@ import com.n2.moon.tower.flows.InitiateTowerRentalProposalFlowResponder
 import com.n2.moon.tower.flows.ReRejectTowerRentalProposalFlowResponder
 import com.n2.moon.tower.flows.RejectTowerRentalProposalFlow
 import com.n2.moon.tower.states.TowerRentalProposalState
+import com.n2.moon.tower.states.TowerState
 import net.corda.core.contracts.Amount
 import net.corda.core.contracts.StateAndRef
 import net.corda.core.contracts.requireSingleCommand
@@ -19,6 +20,7 @@ import net.corda.finance.POUNDS
 import net.corda.finance.contracts.asset.Cash
 import net.corda.finance.contracts.utils.sumCash
 import net.corda.finance.schemas.CashSchemaV1
+import net.corda.samples.obligation.ALICE
 import net.corda.samples.obligation.flows.SelfIssueCashFlow
 import net.corda.testing.internal.chooseIdentityAndCert
 import net.corda.testing.node.MockNetwork
@@ -37,6 +39,8 @@ import kotlin.test.assertFailsWith
  * Uncomment the unit tests and use the hints + unit test body to complete the FLows such that the unit tests pass.
  */
 class RejectTowerRentalProposalFlowTests {
+    var towerState = TowerState("some latitude","some longitude", "some height",
+            "some spec",10, 10.POUNDS, ALICE.party, 0)
     lateinit var mockNetwork: MockNetwork
     lateinit var a: StartedMockNode
     lateinit var b: StartedMockNode

@@ -1,6 +1,7 @@
 package com.n2.moon.tower.contracts
 
 import com.n2.moon.tower.states.TowerRentalProposalState
+import com.n2.moon.tower.states.TowerState
 import net.corda.core.contracts.*
 import net.corda.core.identity.AbstractParty
 import net.corda.core.internal.packageName
@@ -26,6 +27,8 @@ class  AgreeTowerRentalAgreementTests {
     class DummyState : ContractState {
         override val participants: List<AbstractParty> get() = listOf()
     }
+    var towerState = TowerState("some latitude","some longitude", "some height",
+    "some spec",10, 10.POUNDS, ALICE.party, 0)
     // A dummy command.
     class DummyCommand : CommandData
     var ledgerServices = MockServices(listOf("net.corda.finance.contracts.asset", "com.n2.moon.tower.contracts",CashSchemaV1::class.packageName))

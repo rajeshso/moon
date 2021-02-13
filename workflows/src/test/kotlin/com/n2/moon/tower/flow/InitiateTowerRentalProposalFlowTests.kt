@@ -4,6 +4,7 @@ import com.n2.moon.tower.contracts.TowerRentalContract
 import com.n2.moon.tower.flows.InitiateTowerRentalProposalFlow
 import com.n2.moon.tower.flows.InitiateTowerRentalProposalFlowResponder
 import com.n2.moon.tower.states.TowerRentalProposalState
+import com.n2.moon.tower.states.TowerState
 import groovy.util.GroovyTestCase.assertEquals
 import net.corda.core.contracts.Command
 import net.corda.core.contracts.TransactionVerificationException
@@ -12,6 +13,7 @@ import net.corda.core.identity.CordaX500Name
 import net.corda.core.transactions.SignedTransaction
 import net.corda.core.utilities.getOrThrow
 import net.corda.finance.POUNDS
+import net.corda.samples.obligation.ALICE
 import net.corda.testing.internal.chooseIdentityAndCert
 import net.corda.testing.node.MockNetwork
 import net.corda.testing.node.MockNetworkNotarySpec
@@ -31,6 +33,8 @@ import kotlin.test.assertFailsWith
  * On some machines/configurations you may have to use the "JAR manifest" option for shortening the command line.
  */
 class InitiateTowerRentalProposalFlowTests {
+    var towerState = TowerState("some latitude","some longitude", "some height",
+            "some spec",10, 10.POUNDS, ALICE.party, 0)
     lateinit var mockNetwork: MockNetwork
     lateinit var a: StartedMockNode
     lateinit var b: StartedMockNode

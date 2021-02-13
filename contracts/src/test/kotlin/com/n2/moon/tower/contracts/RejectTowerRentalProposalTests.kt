@@ -1,6 +1,7 @@
 package com.n2.moon.tower.contracts
 
 import com.n2.moon.tower.states.TowerRentalProposalState
+import com.n2.moon.tower.states.TowerState
 import net.corda.core.contracts.Amount
 import net.corda.core.contracts.TypeOnlyCommandData
 import net.corda.core.contracts.UniqueIdentifier
@@ -31,6 +32,8 @@ import java.util.*
  * of the tests and the task description to determine how to get the tests to pass.
  */
 class RejectTowerRentalProposalTests {
+    var towerState = TowerState("some latitude","some longitude", "some height",
+            "some spec",10, 10.POUNDS, ALICE.party, 0)
     private fun createCashState(amount: Amount<Currency>, owner: AbstractParty): Cash.State {
         val defaultRef = ByteArray(1) { 1 }
         return Cash.State(amount = amount `issued by`

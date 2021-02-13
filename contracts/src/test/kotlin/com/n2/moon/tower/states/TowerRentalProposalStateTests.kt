@@ -29,7 +29,8 @@ import kotlin.test.assertNotNull
  * Hint: CMD / Ctrl + click on the brown type names in square brackets for that type's definition in the codebase.
  */
 class TowerRentalProposalStateTests {
-
+    var towerState = TowerState("some latitude","some longitude", "some height",
+            "some spec",10, 10.POUNDS, ALICE.party, 0)
     /**
      * Task 1.
      * TODO: Add an 'amount' property of type [Amount] to the [TowerRentalProposalState] class to get this test to pass.
