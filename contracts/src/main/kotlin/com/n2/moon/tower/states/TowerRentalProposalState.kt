@@ -16,8 +16,8 @@ import java.util.*
  */
 @BelongsToContract(TowerRentalContract::class)
 data class TowerRentalProposalState(val rentalAmount: Amount<Currency>,
-                                    val proposerParty: Party,
-                                    val agreementParty: Party,
+                                    val proposerParty: Party,//mno
+                                    val agreementParty: Party,//tower infrastructure provider
                                     val paid: Amount<Currency> = Amount(0, rentalAmount.token),
                                     override val linearId: UniqueIdentifier = UniqueIdentifier()): LinearState {
     /**
