@@ -50,21 +50,21 @@ class RejectTowerRentalProposalTests {
      */
     @Test
     fun mustIncludeSettleCommand() {
-        val iou = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party)
+        val towerRentalProposalState = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party)
         val inputCash = createCashState(5.POUNDS, BOB.party)
         val outputCash = inputCash.withNewOwner(newOwner = ALICE.party).ownableState
         ledgerServices.ledger {
             transaction {
-                input(TowerRentalContract.TOWER_CONTRACT_ID, iou)
-                output(TowerRentalContract.TOWER_CONTRACT_ID, iou.pay(5.POUNDS))
+                input(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState)
+                output(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState.pay(5.POUNDS))
                 input(Cash.PROGRAM_ID, inputCash)
                 output(Cash.PROGRAM_ID, outputCash)
                 command(BOB.publicKey, Cash.Commands.Move())
                 this.failsWith("Contract verification failed");
             }
             transaction {
-                input(TowerRentalContract.TOWER_CONTRACT_ID, iou)
-                output(TowerRentalContract.TOWER_CONTRACT_ID, iou.pay(5.POUNDS))
+                input(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState)
+                output(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState.pay(5.POUNDS))
                 input(Cash.PROGRAM_ID, inputCash)
                 output(Cash.PROGRAM_ID, outputCash)
                 command(BOB.publicKey, Cash.Commands.Move())
@@ -72,8 +72,8 @@ class RejectTowerRentalProposalTests {
                 this.failsWith("Contract verification failed");
             }
             transaction {
-                input(TowerRentalContract.TOWER_CONTRACT_ID, iou)
-                output(TowerRentalContract.TOWER_CONTRACT_ID, iou.pay(5.POUNDS))
+                input(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState)
+                output(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState.pay(5.POUNDS))
                 input(Cash.PROGRAM_ID, inputCash)
                 output(Cash.PROGRAM_ID, outputCash)
                 command(BOB.publicKey, Cash.Commands.Move())
@@ -103,25 +103,25 @@ class RejectTowerRentalProposalTests {
      */
     @Test
     fun mustBeOneGroupOfIOUs() {
-        val iouOne = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party)
-        val iouTwo = TowerRentalProposalState(5.POUNDS, ALICE.party, BOB.party)
+        val rentalOne = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party)
+        val rentalTwo = TowerRentalProposalState(5.POUNDS, ALICE.party, BOB.party)
         val inputCash = createCashState(5.POUNDS, BOB.party)
         val outputCash = inputCash.withNewOwner(newOwner = ALICE.party)
         ledgerServices.ledger {
             transaction {
-                input(TowerRentalContract.TOWER_CONTRACT_ID, iouOne)
-                input(TowerRentalContract.TOWER_CONTRACT_ID, iouTwo)
+                input(TowerRentalContract.TOWER_CONTRACT_ID, rentalOne)
+                input(TowerRentalContract.TOWER_CONTRACT_ID, rentalTwo)
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.RejectTowerRentalAgreement())
-                output(TowerRentalContract.TOWER_CONTRACT_ID, iouOne.pay(5.POUNDS))
+                output(TowerRentalContract.TOWER_CONTRACT_ID, rentalOne.pay(5.POUNDS))
                 input(Cash.PROGRAM_ID, inputCash)
                 output(Cash.PROGRAM_ID, outputCash.ownableState)
                 command(BOB.publicKey, Cash.Commands.Move())
                 this `fails with` "List has more than one element."
             }
             transaction {
-                input(TowerRentalContract.TOWER_CONTRACT_ID, iouOne)
+                input(TowerRentalContract.TOWER_CONTRACT_ID, rentalOne)
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.RejectTowerRentalAgreement())
-                output(TowerRentalContract.TOWER_CONTRACT_ID, iouOne.pay(5.POUNDS))
+                output(TowerRentalContract.TOWER_CONTRACT_ID, rentalOne.pay(5.POUNDS))
                 input(Cash.PROGRAM_ID, inputCash)
                 output(Cash.PROGRAM_ID, outputCash.ownableState)
                 command(BOB.publicKey, Cash.Commands.Move())
@@ -137,27 +137,27 @@ class RejectTowerRentalProposalTests {
      */
     @Test
     fun mustHaveOneInputIOU() {
-        val iou = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party)
-        val iouOne = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party)
+        val towerRentalProposalState = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party)
+        val rentalOne = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party)
         val tenPounds = createCashState(10.POUNDS, BOB.party)
         val fivePounds = createCashState(5.POUNDS, BOB.party)
         ledgerServices.ledger {
             transaction {
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.RejectTowerRentalAgreement())
-                output(TowerRentalContract.TOWER_CONTRACT_ID, iou)
+                output(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState)
                 this `fails with` "There must be one input Tower Rental Proposal."
             }
             transaction {
-                input(TowerRentalContract.TOWER_CONTRACT_ID, iouOne)
+                input(TowerRentalContract.TOWER_CONTRACT_ID, rentalOne)
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.RejectTowerRentalAgreement())
-                output(TowerRentalContract.TOWER_CONTRACT_ID, iouOne.pay(5.POUNDS))
+                output(TowerRentalContract.TOWER_CONTRACT_ID, rentalOne.pay(5.POUNDS))
                 input(Cash.PROGRAM_ID, fivePounds)
                 output(Cash.PROGRAM_ID, fivePounds.withNewOwner(newOwner = ALICE.party).ownableState)
                 command(BOB.publicKey, Cash.Commands.Move())
                 this.verifies()
             }
             transaction {
-                input(TowerRentalContract.TOWER_CONTRACT_ID, iouOne)
+                input(TowerRentalContract.TOWER_CONTRACT_ID, rentalOne)
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.RejectTowerRentalAgreement())
                 input(Cash.PROGRAM_ID, tenPounds)
                 output(Cash.PROGRAM_ID, tenPounds.withNewOwner(newOwner = ALICE.party).ownableState)
@@ -178,20 +178,20 @@ class RejectTowerRentalProposalTests {
      */
     @Test
     fun mustBeCashOutputStatesPresent() {
-        val iou = TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party)
+        val towerRentalProposalState = TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party)
         val cash = createCashState(5.DOLLARS, BOB.party)
         val cashPayment = cash.withNewOwner(newOwner = ALICE.party)
         ledgerServices.ledger {
             transaction {
-                input(TowerRentalContract.TOWER_CONTRACT_ID, iou)
-                output(TowerRentalContract.TOWER_CONTRACT_ID, iou.pay(5.DOLLARS))
+                input(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState)
+                output(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState.pay(5.DOLLARS))
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.RejectTowerRentalAgreement())
                 this `fails with` "There must be output cash."
             }
             transaction {
-                input(TowerRentalContract.TOWER_CONTRACT_ID, iou)
+                input(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState)
                 input(Cash.PROGRAM_ID, cash)
-                output(TowerRentalContract.TOWER_CONTRACT_ID, iou.pay(5.DOLLARS))
+                output(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState.pay(5.DOLLARS))
                 output(Cash.PROGRAM_ID, cashPayment.ownableState)
                 command(BOB.publicKey, cashPayment.command)
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.RejectTowerRentalAgreement())
@@ -213,24 +213,24 @@ class RejectTowerRentalProposalTests {
      */
     @Test
     fun mustBeCashOutputStatesWithRecipientAsOwner() {
-        val iou = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party)
+        val towerRentalProposalState = TowerRentalProposalState(10.POUNDS, ALICE.party, BOB.party)
         val cash = createCashState(5.POUNDS, BOB.party)
         val invalidCashPayment = cash.withNewOwner(newOwner = CHARLIE.party)
         val validCashPayment = cash.withNewOwner(newOwner = ALICE.party)
         ledgerServices.ledger {
             transaction {
-                input(TowerRentalContract.TOWER_CONTRACT_ID, iou)
+                input(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState)
                 input(Cash.PROGRAM_ID, cash)
-                output(TowerRentalContract.TOWER_CONTRACT_ID, iou.pay(5.POUNDS))
+                output(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState.pay(5.POUNDS))
                 output(Cash.PROGRAM_ID, "outputs cash", invalidCashPayment.ownableState)
                 command(BOB.publicKey, invalidCashPayment.command)
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.RejectTowerRentalAgreement())
                 this `fails with` "Output cash must be paid to the proposer."
             }
             transaction {
-                input(TowerRentalContract.TOWER_CONTRACT_ID, iou)
+                input(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState)
                 input(Cash.PROGRAM_ID, cash)
-                output(TowerRentalContract.TOWER_CONTRACT_ID, iou.pay(5.POUNDS))
+                output(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState.pay(5.POUNDS))
                 output(Cash.PROGRAM_ID, validCashPayment.ownableState)
                 command(BOB.publicKey, validCashPayment.command)
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.RejectTowerRentalAgreement())
@@ -254,31 +254,31 @@ class RejectTowerRentalProposalTests {
      */
     @Test
     fun cashSettlementAmountMustBeLessThanRemainingIOUAmount() {
-        val iou = TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party)
+        val towerRentalProposalState = TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party)
         val elevenDollars = createCashState(11.DOLLARS, BOB.party)
         val tenDollars = createCashState(10.DOLLARS, BOB.party)
         val fiveDollars = createCashState(5.DOLLARS, BOB.party)
         ledgerServices.ledger {
             transaction {
-                input(TowerRentalContract.TOWER_CONTRACT_ID, iou)
+                input(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState)
                 input(Cash.PROGRAM_ID, elevenDollars)
-                output(TowerRentalContract.TOWER_CONTRACT_ID, iou.pay(11.DOLLARS))
+                output(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState.pay(11.DOLLARS))
                 output(Cash.PROGRAM_ID, elevenDollars.withNewOwner(newOwner = ALICE.party).ownableState)
                 command(BOB.publicKey, elevenDollars.withNewOwner(newOwner = ALICE.party).command)
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.RejectTowerRentalAgreement())
                 this `fails with` "The amount settled cannot be more than the amount outstanding."
             }
             transaction {
-                input(TowerRentalContract.TOWER_CONTRACT_ID, iou)
+                input(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState)
                 input(Cash.PROGRAM_ID, fiveDollars)
-                output(TowerRentalContract.TOWER_CONTRACT_ID, iou.pay(5.DOLLARS))
+                output(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState.pay(5.DOLLARS))
                 output(Cash.PROGRAM_ID, fiveDollars.withNewOwner(newOwner = ALICE.party).ownableState)
                 command(BOB.publicKey, fiveDollars.withNewOwner(newOwner = ALICE.party).command)
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.RejectTowerRentalAgreement())
                 this.verifies()
             }
             transaction {
-                input(TowerRentalContract.TOWER_CONTRACT_ID, iou)
+                input(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState)
                 input(Cash.PROGRAM_ID, tenDollars)
                 output(Cash.PROGRAM_ID, tenDollars.withNewOwner(newOwner = ALICE.party).ownableState)
                 command(BOB.publicKey, tenDollars.withNewOwner(newOwner = ALICE.party).command)
@@ -296,12 +296,12 @@ class RejectTowerRentalProposalTests {
      */
     @Test
     fun cashSettlementMustBeInTheCorrectCurrency() {
-        val iou = TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party)
+        val towerRentalProposalState = TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party)
         val tenDollars = createCashState(10.DOLLARS, BOB.party)
         val tenPounds = createCashState(10.POUNDS, BOB.party)
         ledgerServices.ledger {
             transaction {
-                input(TowerRentalContract.TOWER_CONTRACT_ID, iou)
+                input(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState)
                 input(Cash.PROGRAM_ID, tenPounds)
                 output(Cash.PROGRAM_ID, tenPounds.withNewOwner(newOwner = ALICE.party).ownableState)
                 command(BOB.publicKey, tenPounds.withNewOwner(newOwner = ALICE.party).command)
@@ -309,7 +309,7 @@ class RejectTowerRentalProposalTests {
                 this `fails with` "Token mismatch: GBP vs USD"
             }
             transaction {
-                input(TowerRentalContract.TOWER_CONTRACT_ID, iou)
+                input(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState)
                 input(Cash.PROGRAM_ID, tenDollars)
                 output(Cash.PROGRAM_ID, tenDollars.withNewOwner(newOwner = ALICE.party).ownableState)
                 command(BOB.publicKey, tenDollars.withNewOwner(newOwner = ALICE.party).command)
@@ -328,12 +328,12 @@ class RejectTowerRentalProposalTests {
      */
     @Test
     fun mustOnlyHaveOutputIOUIfNotFullySettling() {
-        val iou = TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party)
+        val rentalProposalState = TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party)
         val tenDollars = createCashState(10.DOLLARS, BOB.party)
         val fiveDollars = createCashState(5.DOLLARS, BOB.party)
         ledgerServices.ledger {
             transaction {
-                input(TowerRentalContract.TOWER_CONTRACT_ID, iou)
+                input(TowerRentalContract.TOWER_CONTRACT_ID, rentalProposalState)
                 input(Cash.PROGRAM_ID, fiveDollars)
                 output(Cash.PROGRAM_ID, fiveDollars.withNewOwner(newOwner = ALICE.party).ownableState)
                 command(BOB.publicKey, fiveDollars.withNewOwner(newOwner = BOB.party).command)
@@ -341,18 +341,18 @@ class RejectTowerRentalProposalTests {
                 this `fails with` "There must be one output Tower."
             }
             transaction {
-                input(TowerRentalContract.TOWER_CONTRACT_ID, iou)
+                input(TowerRentalContract.TOWER_CONTRACT_ID, rentalProposalState)
                 input(Cash.PROGRAM_ID, fiveDollars)
                 output(Cash.PROGRAM_ID, fiveDollars.withNewOwner(newOwner = ALICE.party).ownableState)
-                output(TowerRentalContract.TOWER_CONTRACT_ID, iou.pay(5.DOLLARS))
+                output(TowerRentalContract.TOWER_CONTRACT_ID, rentalProposalState.pay(5.DOLLARS))
                 command(BOB.publicKey, fiveDollars.withNewOwner(newOwner = BOB.party).command)
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.RejectTowerRentalAgreement())
                 verifies()
             }
             transaction {
                 input(Cash.PROGRAM_ID, tenDollars)
-                input(TowerRentalContract.TOWER_CONTRACT_ID, iou)
-                output(TowerRentalContract.TOWER_CONTRACT_ID, iou.pay(10.DOLLARS))
+                input(TowerRentalContract.TOWER_CONTRACT_ID, rentalProposalState)
+                output(TowerRentalContract.TOWER_CONTRACT_ID, rentalProposalState.pay(10.DOLLARS))
                 output(Cash.PROGRAM_ID, tenDollars.withNewOwner(newOwner = ALICE.party).ownableState)
                 command(BOB.publicKey, tenDollars.withNewOwner(newOwner = BOB.party).command)
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.RejectTowerRentalAgreement())
@@ -360,7 +360,7 @@ class RejectTowerRentalProposalTests {
             }
             transaction {
                 input(Cash.PROGRAM_ID, tenDollars)
-                input(TowerRentalContract.TOWER_CONTRACT_ID, iou)
+                input(TowerRentalContract.TOWER_CONTRACT_ID, rentalProposalState)
                 output(Cash.PROGRAM_ID, tenDollars.withNewOwner(newOwner = ALICE.party).ownableState)
                 command(BOB.publicKey, tenDollars.withNewOwner(newOwner = BOB.party).command)
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.RejectTowerRentalAgreement())
@@ -376,23 +376,23 @@ class RejectTowerRentalProposalTests {
      */
     @Test
     fun onlyPaidPropertyMayChange() {
-        val iou = TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party)
+        val rentalProposalState = TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party)
         val fiveDollars = createCashState(5.DOLLARS, BOB.party)
         ledgerServices.ledger {
             transaction {
-                input(TowerRentalContract.TOWER_CONTRACT_ID, iou)
+                input(TowerRentalContract.TOWER_CONTRACT_ID, rentalProposalState)
                 input(Cash.PROGRAM_ID, fiveDollars)
                 output(Cash.PROGRAM_ID, fiveDollars.withNewOwner(newOwner = ALICE.party).ownableState)
-                output(TowerRentalContract.TOWER_CONTRACT_ID, iou.copy(agreementParty = ALICE.party, paid = 5.DOLLARS))
+                output(TowerRentalContract.TOWER_CONTRACT_ID, rentalProposalState.copy(agreementParty = ALICE.party, paid = 5.DOLLARS))
                 command(BOB.publicKey, fiveDollars.withNewOwner(newOwner = BOB.party).command)
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.RejectTowerRentalAgreement())
                 this `fails with` "Only the paid amount can change."
             }
             transaction {
-                input(TowerRentalContract.TOWER_CONTRACT_ID, iou)
+                input(TowerRentalContract.TOWER_CONTRACT_ID, rentalProposalState)
                 input(Cash.PROGRAM_ID, fiveDollars)
                 output(Cash.PROGRAM_ID, fiveDollars.withNewOwner(newOwner = ALICE.party).ownableState)
-                output(TowerRentalContract.TOWER_CONTRACT_ID, iou.pay(5.DOLLARS))
+                output(TowerRentalContract.TOWER_CONTRACT_ID, rentalProposalState.pay(5.DOLLARS))
                 command(BOB.publicKey, fiveDollars.withNewOwner(newOwner = BOB.party).command)
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.RejectTowerRentalAgreement())
                 verifies()
@@ -407,34 +407,34 @@ class RejectTowerRentalProposalTests {
      */
     @Test
     fun mustBeSignedByAllParticipants() {
-        val iou = TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party)
+        val towerRentalProposalState = TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party)
         val cash = createCashState(5.DOLLARS, BOB.party)
         val cashPayment = cash.withNewOwner(newOwner = ALICE.party)
         ledgerServices.ledger {
             transaction {
                 input(Cash.PROGRAM_ID, cash)
-                input(TowerRentalContract.TOWER_CONTRACT_ID, iou)
+                input(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState)
                 output(Cash.PROGRAM_ID, cashPayment.ownableState)
                 command(BOB.publicKey, cashPayment.command)
-                output(TowerRentalContract.TOWER_CONTRACT_ID, iou.pay(5.DOLLARS))
+                output(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState.pay(5.DOLLARS))
                 command(listOf(ALICE.publicKey, CHARLIE.publicKey), TowerRentalContract.Commands.RejectTowerRentalAgreement())
                 failsWith("Both proposer and agreementParty together only must sign the Tower settle transaction.")
             }
             transaction {
                 input(Cash.PROGRAM_ID, cash)
-                input(TowerRentalContract.TOWER_CONTRACT_ID, iou)
+                input(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState)
                 output(Cash.PROGRAM_ID, cashPayment.ownableState)
                 command(BOB.publicKey, cashPayment.command)
-                output(TowerRentalContract.TOWER_CONTRACT_ID, iou.pay(5.DOLLARS))
+                output(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState.pay(5.DOLLARS))
                 command(BOB.publicKey, TowerRentalContract.Commands.RejectTowerRentalAgreement())
                 failsWith("Both proposer and agreementParty together only must sign the Tower settle transaction.")
             }
             transaction {
                 input(Cash.PROGRAM_ID, cash)
-                input(TowerRentalContract.TOWER_CONTRACT_ID, iou)
+                input(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState)
                 output(Cash.PROGRAM_ID, cashPayment.ownableState)
                 command(BOB.publicKey, cashPayment.command)
-                output(TowerRentalContract.TOWER_CONTRACT_ID, iou.pay(5.DOLLARS))
+                output(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState.pay(5.DOLLARS))
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.RejectTowerRentalAgreement())
                 verifies()
             }

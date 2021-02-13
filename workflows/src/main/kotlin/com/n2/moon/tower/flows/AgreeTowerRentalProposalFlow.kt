@@ -90,7 +90,7 @@ class AgreeTowerRentalProposalFlowResponder(val flowSession: FlowSession): FlowL
         val signedTransactionFlow = object : SignTransactionFlow(flowSession) {
             override fun checkTransaction(stx: SignedTransaction) = requireThat {
                 val output = stx.tx.outputs.single().data
-                "This must be an Tower transaction" using (output is TowerRentalProposalState)
+                "This must be an Tower Rental Proposal transaction" using (output is TowerRentalProposalState)
             }
         }
         val txWeJustSignedId = subFlow(signedTransactionFlow)

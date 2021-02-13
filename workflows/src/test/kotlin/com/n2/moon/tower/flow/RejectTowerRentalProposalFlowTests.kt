@@ -64,7 +64,7 @@ class RejectTowerRentalProposalFlowTests {
     /**
      * Issue an Tower on the ledger, we need to do this before we can transfer one.
      */
-    private fun installTower(towerRentalProposalState: TowerRentalProposalState): SignedTransaction {
+    private fun installTowerRentalProposalState(towerRentalProposalState: TowerRentalProposalState): SignedTransaction {
         val flow = InitiateTowerRentalProposalFlow(towerRentalProposalState)
         val future = a.startFlow(flow)
         mockNetwork.runNetwork()
@@ -98,7 +98,7 @@ class RejectTowerRentalProposalFlowTests {
      */
     @Test
     fun flowReturnsCorrectlyFormedPartiallySignedTransaction() {
-        val stx = installTower(TowerRentalProposalState(10.POUNDS, b.info.chooseIdentityAndCert().party, a.info.chooseIdentityAndCert().party))
+        val stx = installTowerRentalProposalState(TowerRentalProposalState(10.POUNDS, b.info.chooseIdentityAndCert().party, a.info.chooseIdentityAndCert().party))
         issueCash(5.POUNDS)
         val inputTower = stx.tx.outputs.single().data as TowerRentalProposalState
         val flow = RejectTowerRentalProposalFlow(inputTower.linearId, 5.POUNDS)
@@ -143,7 +143,7 @@ class RejectTowerRentalProposalFlowTests {
      */
     @Test
     fun settleFlowCanOnlyBeRunByAgreementParty() {
-        val stx = installTower(TowerRentalProposalState(10.POUNDS, b.info.chooseIdentityAndCert().party, a.info.chooseIdentityAndCert().party))
+        val stx = installTowerRentalProposalState(TowerRentalProposalState(10.POUNDS, b.info.chooseIdentityAndCert().party, a.info.chooseIdentityAndCert().party))
         issueCash(5.POUNDS)
         val inputTower = stx.tx.outputs.single().data as TowerRentalProposalState
         val flow = RejectTowerRentalProposalFlow(inputTower.linearId, 5.POUNDS)
@@ -162,7 +162,7 @@ class RejectTowerRentalProposalFlowTests {
      */
     @Test
     fun agreementPartyMustHaveCashInRightCurrency() {
-        val stx = installTower(TowerRentalProposalState(10.POUNDS, b.info.chooseIdentityAndCert().party, a.info.chooseIdentityAndCert().party))
+        val stx = installTowerRentalProposalState(TowerRentalProposalState(10.POUNDS, b.info.chooseIdentityAndCert().party, a.info.chooseIdentityAndCert().party))
         val inputTower = stx.tx.outputs.single().data as TowerRentalProposalState
         val flow = RejectTowerRentalProposalFlow(inputTower.linearId, 5.POUNDS)
         val future = a.startFlow(flow)
@@ -178,7 +178,7 @@ class RejectTowerRentalProposalFlowTests {
      */
     @Test
     fun agreementPartyMustHaveEnoughCashInRightCurrency() {
-        val stx = installTower(TowerRentalProposalState(10.POUNDS, b.info.chooseIdentityAndCert().party, a.info.chooseIdentityAndCert().party))
+        val stx = installTowerRentalProposalState(TowerRentalProposalState(10.POUNDS, b.info.chooseIdentityAndCert().party, a.info.chooseIdentityAndCert().party))
         issueCash(1.POUNDS)
         val inputTower = stx.tx.outputs.single().data as TowerRentalProposalState
         val flow = RejectTowerRentalProposalFlow(inputTower.linearId, 5.POUNDS)
@@ -194,7 +194,7 @@ class RejectTowerRentalProposalFlowTests {
      */
     @Test
     fun flowReturnsTransactionSignedByBothParties() {
-        val stx = installTower(TowerRentalProposalState(10.POUNDS, b.info.chooseIdentityAndCert().party, a.info.chooseIdentityAndCert().party))
+        val stx = installTowerRentalProposalState(TowerRentalProposalState(10.POUNDS, b.info.chooseIdentityAndCert().party, a.info.chooseIdentityAndCert().party))
         issueCash(5.POUNDS)
         val inputTower = stx.tx.outputs.single().data as TowerRentalProposalState
         val flow = RejectTowerRentalProposalFlow(inputTower.linearId, 5.POUNDS)
@@ -213,7 +213,7 @@ class RejectTowerRentalProposalFlowTests {
      */
     @Test
     fun flowReturnsCommittedTransaction() {
-        val stx = installTower(TowerRentalProposalState(10.POUNDS, b.info.chooseIdentityAndCert().party, a.info.chooseIdentityAndCert().party))
+        val stx = installTowerRentalProposalState(TowerRentalProposalState(10.POUNDS, b.info.chooseIdentityAndCert().party, a.info.chooseIdentityAndCert().party))
         issueCash(5.POUNDS)
         val inputTower = stx.tx.outputs.single().data as TowerRentalProposalState
         val flow = RejectTowerRentalProposalFlow(inputTower.linearId, 5.POUNDS)

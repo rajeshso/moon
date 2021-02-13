@@ -108,8 +108,8 @@ class TowerRentalProposalStateTests {
      */
     @Test
     fun agreementPartyIsParticipant() {
-        val towerState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party)
-        assertNotEquals(towerState.participants.indexOf(BOB.party), -1)
+        val towerRentalProposalState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party)
+        assertNotEquals(towerRentalProposalState.participants.indexOf(BOB.party), -1)
     }
 
     /**
@@ -142,8 +142,8 @@ class TowerRentalProposalStateTests {
         // Is the linearId field of the correct type?
         assertEquals(TowerRentalProposalState::class.java.getDeclaredField("linearId").type, UniqueIdentifier::class.java)
         // Check field is set to a not null value
-        val towerState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party)
-        assertNotNull(towerState.linearId)
+        val towerRentalProposalState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party)
+        assertNotNull(towerRentalProposalState.linearId)
     }
 
     /**
@@ -180,10 +180,10 @@ class TowerRentalProposalStateTests {
      */
     @Test
     fun checkPayHelperMethod() {
-        val towerState = TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party)
-        assertEquals(5.DOLLARS, towerState.pay(5.DOLLARS).paid)
-        assertEquals(3.DOLLARS, towerState.pay(1.DOLLARS).pay(2.DOLLARS).paid)
-        assertEquals(10.5.DOLLARS, towerState.pay(5.DOLLARS).pay(3.DOLLARS).pay(2.5.DOLLARS).paid)
+        val towerRentalProposalState = TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party)
+        assertEquals(5.DOLLARS, towerRentalProposalState.pay(5.DOLLARS).paid)
+        assertEquals(3.DOLLARS, towerRentalProposalState.pay(1.DOLLARS).pay(2.DOLLARS).paid)
+        assertEquals(10.5.DOLLARS, towerRentalProposalState.pay(5.DOLLARS).pay(3.DOLLARS).pay(2.5.DOLLARS).paid)
     }
 
     /**
@@ -192,8 +192,8 @@ class TowerRentalProposalStateTests {
      */
     @Test
     fun checkWithNewProposerHelperMethod() {
-        val towerState = TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party)
-        assertEquals(MINICORP.party, towerState.withNewProposer(MINICORP.party).proposerParty)
-        assertEquals(MEGACORP.party, towerState.withNewProposer(MINICORP.party).withNewProposer(MEGACORP.party).proposerParty)
+        val towerRentalProposalState = TowerRentalProposalState(10.DOLLARS, ALICE.party, BOB.party)
+        assertEquals(MINICORP.party, towerRentalProposalState.withNewProposer(MINICORP.party).proposerParty)
+        assertEquals(MEGACORP.party, towerRentalProposalState.withNewProposer(MINICORP.party).withNewProposer(MEGACORP.party).proposerParty)
     }
 }

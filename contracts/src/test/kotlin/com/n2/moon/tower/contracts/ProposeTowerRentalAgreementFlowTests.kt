@@ -54,15 +54,15 @@ class ProposeTowerRentalAgreementFlowTests {
      */
     @Test
     fun mustIncludeIssueCommand() {
-        val towerState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party)
+        val towerRentalProposalState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party)
         ledgerServices.ledger {
             transaction {
-                output(TowerRentalContract.TOWER_CONTRACT_ID,  towerState)
+                output(TowerRentalContract.TOWER_CONTRACT_ID,  towerRentalProposalState)
                 command(listOf(ALICE.publicKey, BOB.publicKey), DummyCommand()) // Wrong type.
                 this.fails()
             }
             transaction {
-                output(TowerRentalContract.TOWER_CONTRACT_ID, towerState)
+                output(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState)
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.ProposeTowerRentalAgreement()) // Correct type.
                 this.verifies()
             }
@@ -89,16 +89,16 @@ class ProposeTowerRentalAgreementFlowTests {
      */
     //@Disabled
     fun issueTransactionMustHaveNoInputs() {
-        val towerState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party)
+        val towerRentalProposalState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party)
         ledgerServices.ledger {
             transaction {
                 input(TowerRentalContract.TOWER_CONTRACT_ID, DummyState())
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.ProposeTowerRentalAgreement())
-                output(TowerRentalContract.TOWER_CONTRACT_ID, towerState)
+                output(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState)
                 this `fails with` "No inputs should be consumed when issuing an TowerState."
             }
             transaction {
-                output(TowerRentalContract.TOWER_CONTRACT_ID, towerState)
+                output(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState)
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.ProposeTowerRentalAgreement())
                 this.verifies() // As there are no input states.
             }
@@ -114,17 +114,17 @@ class ProposeTowerRentalAgreementFlowTests {
      */
     @Test
     fun issueTransactionMustHaveOneOutput() {
-        val towerState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party)
+        val towerRentalProposalState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party)
         ledgerServices.ledger {
             transaction {
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.ProposeTowerRentalAgreement())
-                output(TowerRentalContract.TOWER_CONTRACT_ID, towerState) // Two outputs fails.
-                output(TowerRentalContract.TOWER_CONTRACT_ID, towerState)
+                output(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState) // Two outputs fails.
+                output(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState)
                 this `fails with` "Only one output state should be created when issuing a Tower Rental Proposal."
             }
             transaction {
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.ProposeTowerRentalAgreement())
-                output(TowerRentalContract.TOWER_CONTRACT_ID, towerState) // One output passes.
+                output(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState) // One output passes.
                 this.verifies()
             }
         }
@@ -186,17 +186,17 @@ class ProposeTowerRentalAgreementFlowTests {
      */
     @Test
     fun proposerAndAgreementPartyCannotBeTheSame() {
-        val towerState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party)
-        val agreementPartyIsProposerIou = TowerRentalProposalState(10.POUNDS, ALICE.party, ALICE.party)
+        val towerRentalProposalState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party)
+        val agreementPartyIsProposerRentalState = TowerRentalProposalState(10.POUNDS, ALICE.party, ALICE.party)
         ledgerServices.ledger {
             transaction {
                 command(listOf(ALICE.publicKey, BOB.publicKey),TowerRentalContract.Commands.ProposeTowerRentalAgreement())
-                output(TowerRentalContract.TOWER_CONTRACT_ID, agreementPartyIsProposerIou)
+                output(TowerRentalContract.TOWER_CONTRACT_ID, agreementPartyIsProposerRentalState)
                 this `fails with` "The proposer and agreementParty cannot have the same identity."
             }
             transaction {
                 command(listOf(ALICE.publicKey, BOB.publicKey), TowerRentalContract.Commands.ProposeTowerRentalAgreement())
-                output(TowerRentalContract.TOWER_CONTRACT_ID, towerState)
+                output(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState)
                 this.verifies()
             }
         }
@@ -223,41 +223,41 @@ class ProposeTowerRentalAgreementFlowTests {
      */
     @Test
     fun proposerAndAgreementPartyMustSignIssueTransaction() {
-        val towerState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party)
+        val towerRentalProposalState = TowerRentalProposalState(1.POUNDS, ALICE.party, BOB.party)
         ledgerServices.ledger {
             transaction {
                 command(DUMMY.publicKey, TowerRentalContract.Commands.ProposeTowerRentalAgreement())
-                output(TowerRentalContract.TOWER_CONTRACT_ID, towerState)
+                output(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState)
                 this `fails with` "Both proposer and agreementParty together only may sign Tower Rental Proposal transaction."
             }
             transaction {
                 command(ALICE.publicKey, TowerRentalContract.Commands.ProposeTowerRentalAgreement())
-                output(TowerRentalContract.TOWER_CONTRACT_ID, towerState)
+                output(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState)
                 this `fails with` "Both proposer and agreementParty together only may sign Tower Rental Proposal transaction."
             }
             transaction {
                 command(BOB.publicKey, TowerRentalContract.Commands.ProposeTowerRentalAgreement())
-                output(TowerRentalContract.TOWER_CONTRACT_ID, towerState)
+                output(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState)
                 this `fails with` "Both proposer and agreementParty together only may sign Tower Rental Proposal transaction."
             }
             transaction {
                 command(listOf(BOB.publicKey, BOB.publicKey, BOB.publicKey), TowerRentalContract.Commands.ProposeTowerRentalAgreement())
-                output(TowerRentalContract.TOWER_CONTRACT_ID, towerState)
+                output(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState)
                 this `fails with` "Both proposer and agreementParty together only may sign Tower Rental Proposal transaction."
             }
             transaction {
                 command(listOf(BOB.publicKey, BOB.publicKey, MINICORP.publicKey, ALICE.publicKey), TowerRentalContract.Commands.ProposeTowerRentalAgreement())
-                output(TowerRentalContract.TOWER_CONTRACT_ID, towerState)
+                output(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState)
                 this `fails with` "Both proposer and agreementParty together only may sign Tower Rental Proposal transaction."
             }
             transaction {
                 command(listOf(BOB.publicKey, BOB.publicKey, BOB.publicKey, ALICE.publicKey), TowerRentalContract.Commands.ProposeTowerRentalAgreement())
-                output(TowerRentalContract.TOWER_CONTRACT_ID, towerState)
+                output(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState)
                 this.verifies()
             }
             transaction {
                 command(listOf(ALICE.publicKey, BOB.publicKey),TowerRentalContract.Commands.ProposeTowerRentalAgreement())
-                output(TowerRentalContract.TOWER_CONTRACT_ID, towerState)
+                output(TowerRentalContract.TOWER_CONTRACT_ID, towerRentalProposalState)
                 this.verifies()
             }
         }
